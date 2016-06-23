@@ -1,8 +1,8 @@
 ## Hour ahead framework gitignore file
-!old_models/*
 *old*/*
 Data/*
 Day*/*
+*.gdx
 *.lst
 *.inc
 *.lxi
