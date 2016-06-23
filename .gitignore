@@ -1,0 +1,12 @@
+## Hour ahead framework gitignore file
+!old_models/*
+*old*/*
+Data/*
+Day*/*
+*.lst
+*.inc
+*.lxi
+*.log
+*.xls
+*.xlsx
+*.csv
