@@ -1,5 +1,5 @@
 ********************************************************************************
-** CONGESTION RELIEF PROBLEM. DAY-AHEAD SCHEDULE
+*** CONGESTION RELIEF PROBLEM. DAY-AHEAD SCHEDULE                              *
 ********************************************************************************
 
 $onempty
@@ -13,17 +13,19 @@ $offuelxref
 option limrow = 0,
        limcol = 0,
        solprint = off,
-       sysout = off;
+       sysout = off
+;
 
 ********************************************************************************
-** READING INPUT DATA
+*** READING INPUT DATA                                                         *
 ********************************************************************************
 
 $include C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
 
 ********************************************************************************
-** DECLARATION OF FREE VARIABLES, POSITIVE VARIABLES, BINARY VARIABLES
+*** DECLARATION OF FREE VARIABLES, POSITIVE VARIABLES, BINARY VARIABLES        *
 ********************************************************************************
+
 
 variables
         obj                     objective function of the unit commitment
@@ -38,8 +40,8 @@ positive variables
         slack_solar(r, t)       solar spillage
         slack_wind(w, t)        wind spillage
         slack_fixed(f, t)       fixed spillage
-        slack_flow(l, t)        transmission capacity slack variables
-        slack(s, t)             power balance equation slack variables
+        slack_flow(l, t)        transmission capacity slack variables 
+        slack_pbal(s, t)        power balance equation slack variables
 ;
 
 
@@ -83,7 +85,7 @@ equations
 alias (t, tt);
 
 ********************************************************************************
-** DEFINITION OF CONSTRAINTS FOR BOTH MODELS
+*** DEFINITION OF CONSTRAINTS FOR BOTH MODELS                                  *
 ********************************************************************************
 
 ** Objective function of the problem which comprises commitment and dispatch
@@ -97,9 +99,8 @@ cost..
           + sum((t, r)$(t_ha(t)), slack_solar(r, t)) * VoRS
           + sum((t, w)$(t_ha(t)), slack_wind(w, t)) * VoRS
           + sum((f, t)$(t_ha(t)), slack_fixed(f, t)) * 100000000
-*         + sum((s, t)$(t_ha(t)), slack(s, t)) * 100000000
-          + sum((l, t)$(t_ha(t)), slack_flow(l, t)) * 100000000
-          + sum((l, t)$(t_ha(t)), slack_flow(l, t)) * 100000000
+          + sum((t, s)$(t_ha(t)), slack_pbal(s, t)) * 100000000
+*         + sum((l, t)$(t_ha(t)), slack_flow(l, t)) * 100000000
 ;
 
 ** Binary logic between start-up, shutdown, and commitment variables for
@@ -140,11 +141,11 @@ min_updown_2(t, i)$(t_ha(t) and ord(t) gt L_up_min(i))..
 min_updown_3(t, i)$(t_ha(t) and ord(t) gt L_down_min(i))..
         sum(tt$(ord(tt) ge ord(t) - g_down(i) + 1 and ord(tt) le ord(t)), z(tt, i)) =l= 1 - v(t, i);
 
-** Ramp down constraints for periods greater than 1
+** Ramp down constraints for periods greater than the current hour
 ramp_limit_min(t, i)$(t_ha(t) and ord(t) gt hour)..
         -ramp_down(i) =l= g(t, i) - g(t-1, i);
 
-** Ramp up constraints for periods greater than 1
+** Ramp up constraints for periods greater than the current hour
 ramp_limit_max(t, i)$(t_ha(t) and ord(t) gt hour)..
         ramp_up(i) =g= g(t, i) - g(t-1, i);
 
@@ -160,7 +161,7 @@ ramp_limit_max_1(t, i)$(t_ha(t) and ord(t) eq hour)..
 ** fixed generation, solar generation, wind generation, in and out flows, and the nodal demand
 
 power_balance(t, s)$(t_ha(t))..
-*   demand(s, t) - slack(s, t)
+*   demand(s, t) - slack_pbal(s, t)
     demand(s, t) =e=
           sum(i$(gen_map(i) = ord(s)), g(t, i))
         + sum(f$(fix_map(f) = ord(s)), fix_deterministic(f, t) - slack_fixed(f, t))    
@@ -173,10 +174,8 @@ power_balance(t, s)$(t_ha(t))..
 ** Definition of the power flow of each line in terms of the voltage phase angles
 
 line_flow(t, l)$(t_ha(t))..
-    pf(t, l) =e=
-        admittance(l)*(sum(s$(line_map(l, 'from') = ord(s)), theta(t, s))
-                     - sum(s$(line_map(l, 'to') = ord(s)), theta(t, s)))
-;
+    pf(t, l) =e= admittance(l)*(sum(s$(line_map(l, 'from') = ord(s)), theta(t, s))
+                              - sum(s$(line_map(l, 'to') = ord(s)), theta(t, s)));
 
 ** Transmission capacity constraints
 *line_capacity_min(t, l)$(t_ha(t))..
@@ -213,8 +212,8 @@ slack_fixed_constr(t, f)$(t_ha(t))..
 model TEPO_UC /all/;
 
 ********************************************************************************
-** OPTIONS FOR THE SIMULATIONS: TIME LIMITATION, GAP, NUMBER OF THREADS,
-** INITIALIZATION, ...
+*** OPTIONS FOR THE SIMULATIONS: TIME LIMITATION, GAP, NUMBER OF THREADS,      *
+*** INITIALIZATION, ...                                                        *
 ********************************************************************************
 
 option reslim = 1000000;
@@ -225,7 +224,7 @@ option threads = 1;
 * option optca = 0;
 
 ********************************************************************************
-** SOLVING THE UC PROBLEM FOR THE HOUR-AHEAD OPERATION
+*** SOLVING THE UC PROBLEM FOR THE HOUR-AHEAD OPERATION                        *
 ********************************************************************************
 
 ** Defintion of parameters that we want to output
@@ -244,7 +243,8 @@ parameter power_output_out(t, i),
           M_cong_snpd_aux(t, l),
           flow_cong_output(l, t),
           total_cost,
-          generation_cost;
+          generation_cost
+;
 
 ** Solve the minimization problem by using mixed-integer linear programming
 solve TEPO_UC using mip minimizing obj;
@@ -281,6 +281,10 @@ execute_unload "uc_ha_day2_hour24_constrained.gdx"
     time_elapsed,
     M_cong_aux,
     flow_cong_output;
+
+********************************************************************************
+*** OUTPUT FILES                                                               *
+********************************************************************************
 
 ** Output of the power from conventional thermal generators
 FILE output1 /'C:\BPA_project\Test_connect_HA_ok\Data\gbis.csv'/;
