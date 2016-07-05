@@ -1,5 +1,7 @@
 ********************************************************************************
-*** CONGESTION RELIEF PROBLEM. DAY-AHEAD SCHEDULE                              *
+*** HA_CF_model2_4hour_TH.gms                                                  *
+***                                                                            *
+*** STAGE 3 OF THE CONGESTION RELIEF PROBLEM IN THE HOUR-AHEAD FRAMEWORK       *
 ********************************************************************************
 
 $onempty
@@ -20,8 +22,7 @@ option limrow = 0,
 *** READING INPUT DATA                                                         *
 ********************************************************************************
 
-
-$include input_data_4hour_TH.gms
+$include C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
 
 table g_bis2(i, t)
 $ondelim
@@ -97,6 +98,7 @@ M_cong(t)$(sum(l, M_cong_aux(t, l)) gt 0) = 1;
 
 ** We read the input data from DEPO: schedule and prices for each of the actions
 ** that TEPO can do
+
 table ch_DEPO(d, t)
 $ondelim
 $include C:\BPA_project\Test_connect_DA_new_ok\Data\ch_DEPO.csv
@@ -154,19 +156,19 @@ parameters Bound_ch(t, d),
 
 Bound_ch(t, d) = (ES_power_max(d)*s_base - ch_DEPO(d, t))$(ch_DEPO(d, t) gt 0)
                + (ES_power_max(d)*s_base)$(dis_DEPO(d, t) gt 0)
-               + (ES_power_max(d)*s_base)$(dis_DEPO(d, t) eq 0 and ch_DEPO(d, t) eq 0);
+               + (ES_power_max(d)*s_base)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d, t) eq 0));
 
 Bound_dis(t, d) = (ES_power_max(d)*s_base)$(ch_DEPO(d, t) gt 0)
                 + (ES_power_max(d)*s_base - dis_DEPO(d, t))$(dis_DEPO(d, t) gt 0)
-                + (ES_power_max(d)*s_base)$(dis_DEPO(d, t) eq 0 and ch_DEPO(d,t) eq 0);
+                + (ES_power_max(d)*s_base)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d,t) eq 0));
 
 Bound_SD(t, d) = (0)$(ch_DEPO(d, t) gt 0)
                + (dis_DEPO(d, t))$(dis_DEPO(d, t) gt 0)
-               + (0)$(dis_DEPO(d, t) eq 0 and ch_DEPO(d, t) eq 0);
+               + (0)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d, t) eq 0));
 
 Bound_SC(t, d) = (ch_DEPO(d, t))$(ch_DEPO(d, t) gt 0)
                + (0)$(dis_DEPO(d, t) gt 0)
-               + (0)$(dis_DEPO(d, t) eq 0 and ch_DEPO(d, t) eq 0);
+               + (0)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d, t) eq 0));
 
 Bound_ch(t, d) = Bound_ch(t, d) / s_base;
 Bound_dis(t, d) = Bound_dis(t, d) / s_base;
@@ -280,23 +282,23 @@ cost..
           + sum((t, r)$(t_ha(t)), slack_solar_plus(t, r) + slack_solar_minus(t, r)) * penalty_pf
           + sum((t, w)$(t_ha(t)), slack_wind_plus(t, w) + slack_wind_minus(t, w)) * penalty_pf
           + sum((f, t)$(t_ha(t)), slack_fixed_plus(t, f) + slack_fixed_minus(t, f)) * penalty_pf
-          + sum((t, d)$(t_ha(t) and ch_DEPO(d, t) ge 0), ch_TEPO(t, d)*C_ch(d, t))
-          + sum((t, d)$(t_ha(t) and dis_DEPO(d, t) ge 0), dis_TEPO(t, d)*C_dis(d, t))
-          + sum((t, d)$(t_ha(t) and ch_DEPO(d, t) gt 0), dis_TEPO_SC(t, d)*C_SC(d, t))
-          + sum((t, d)$(t_ha(t) and dis_DEPO(d, t) gt 0), ch_TEPO_SD(t, d)*C_SD(d, t))
-          + sum((t, d)$(t_ha(t) and dis_DEPO(d, t) gt 0), ch_TEPO(t, d)*P_ch(d, t))
-          + sum((t, d)$(t_ha(t) and ch_DEPO(d, t) gt 0), dis_TEPO(t, d)*P_dis(d, t))
+          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) ge 0)), ch_TEPO(t, d)*C_ch(d, t))
+          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) ge 0)), dis_TEPO(t, d)*C_dis(d, t))
+          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) gt 0)), dis_TEPO_SC(t, d)*C_SC(d, t))
+          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) gt 0)), ch_TEPO_SD(t, d)*C_SD(d, t))
+          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) gt 0)), ch_TEPO(t, d)*P_ch(d, t))
+          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) gt 0)), dis_TEPO(t, d)*P_dis(d, t))
           + sum((s, t)$(t_ha(t)), slack_pbal(s, t)) * 100000000
 ;
 
 ** Binary logic between start-up, shutdown, and commitment variables for
 ** periods greater than 1
-bin_set1(t, i)$(t_ha(t) and ord(t) gt hour)..
+bin_set1(t, i)$(t_ha(t) and (ord(t) gt hour))..
          y(t, i) - z(t, i) =e= v(t, i) - v(t-1, i);
 
 ** Binary logic between start-up, shutdown, and commitment variables for
 ** the first period of the optimization horizon
-bin_set10(t, i)$(t_ha(t) and ord(t) = hour)..
+bin_set10(t, i)$(t_ha(t) and (ord(t) = hour))..
          y(t, i) - z(t, i) =e= v(t, i) - onoff_t0(i);
 
 ** Relation between start-up and shudown variables in order to avoid simultaneous actions
@@ -304,16 +306,16 @@ bin_set2(t, i)$(t_ha(t))..
          y(t, i) + z(t, i) =l= 1;
 
 ** Initial conditions for the minimum up and down time constraints
-min_updown_1(t, i)$(t_ha(t) and L_up_min(i) + L_down_min(i) gt 0 and ord(t) le L_up_min(i) + L_down_min(i))..
+min_updown_1(t, i)$(t_ha(t) and (L_up_min(i) + L_down_min(i) gt 0) and (ord(t) le L_up_min(i) + L_down_min(i)))..
          v(t, i) =e= onoff_t0(i);
 
 ** Minimum up time constraints for the rest of the periods
-min_updown_2(t, i)$(t_ha(t) and ord(t) gt L_up_min(i))..
-         sum(tt$(ord(tt) ge ord(t) - g_up(i) + 1 and ord(tt) le ord(t)), y(tt, i)) =l= v(t, i);
+min_updown_2(t, i)$(t_ha(t) and (ord(t) gt L_up_min(i)))..
+         sum(tt$((ord(tt) ge ord(t) - g_up(i) + 1) and (ord(tt) le ord(t))), y(tt, i)) =l= v(t, i);
 
 ** Minimum down time constraints for the rest of the periods
-min_updown_3(t, i)$(t_ha(t) and ord(t) gt L_down_min(i))..
-         sum(tt$(ord(tt) ge ord(t) - g_down(i) + 1 and ord(tt) le ord(t)), z(tt, i)) =l= 1 - v(t, i);
+min_updown_3(t, i)$(t_ha(t) and (ord(t) gt L_down_min(i)))..
+         sum(tt$((ord(tt) ge ord(t) - g_down(i) + 1) and (ord(tt) le ord(t))), z(tt, i)) =l= 1 - v(t, i);
 
 ** Definition of the power output as the summation of the power output of each of the blocks
 gen_sum(t, i)$(t_ha(t))..
@@ -329,21 +331,21 @@ block_output(t, i, b)$(t_ha(t))..
          glin_bis(t, i, b) + deltag_lin_plus(t, i, b) - deltag_lin_minus(t, i, b) =l= g_max(i, b)*v(t, i);
 
 ** Ramp down constraints for periods greater than 1
-ramp_limit_min(t, i)$(t_ha(t) and ord(t) gt 1)..
+ramp_limit_min(t, i)$(t_ha(t) and (ord(t) gt 1))..
          -ramp_down(i) =l= (gbis(t, i) + deltag_plus(t, i) - deltag_minus(t, i))
                          - (gbis(t-1, i) + deltag_plus(t-1, i) - deltag_minus(t-1, i));
 
 ** Ramp up constraints for periods greater than 1
-ramp_limit_max(t, i)$(t_ha(t) and ord(t) gt 1)..
+ramp_limit_max(t, i)$(t_ha(t) and (ord(t) gt 1))..
          ramp_up(i) =g= (gbis(t, i) + deltag_plus(t, i) - deltag_minus(t, i))
                       - (gbis(t-1, i) + deltag_plus(t-1, i) - deltag_minus(t-1, i));
 
 ** Ramp down constraints for the initial period
-ramp_limit_min_1(t, i)$(t_ha(t) and ord(t) eq hour)..
+ramp_limit_min_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
          -ramp_down(i) =l= (gbis(t, i) + deltag_plus(t, i) - deltag_minus(t, i)) - g_0(i);
 
 ** Ramp up constraints for the initial period
-ramp_limit_max_1(t, i)$(t_ha(t) and ord(t) eq hour)..
+ramp_limit_max_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
          ramp_up(i) =g= (gbis(t, i) + deltag_plus(t, i) - deltag_minus(t, i)) - g_0(i);
 
 ** Nodal power balance equations including the power output of conventional thermal units
@@ -421,11 +423,11 @@ slack_fixed_constr2(t, f)$(t_ha(t))..
         slack_fixed_bis(f, t) + slack_fixed_plus(t, f) - slack_fixed_minus(t, f) =g= 0;
 
 ** Initial energy storage state of charge trajectory
-eq_storage_init(t, d)$(t_ha(t) and ord(t) eq hour)..
+eq_storage_init(t, d)$(t_ha(t) and (ord(t) eq hour))..
         soc(t, d) =e= E_initial(d) + ch_total(t, d)*alef_ch(d) - dis_total(t, d)/alef_dis(d);
 
 ** Energy storage state of charge trajectory in periods greater than the starting hour
-eq_storage(t, d)$(t_ha(t) and ord(t) gt hour)..
+eq_storage(t, d)$(t_ha(t) and (ord(t) gt hour))..
         soc(t, d) =e= soc(t-1, d) + ch_total(t, d)*alef_ch(d) - dis_total(t, d)/alef_dis(d);
 
 ** Definition of the total charge of ES
@@ -457,7 +459,7 @@ soc_limit(t, d)$(t_ha(t))..
         soc(t, d) =l= Emax(d);
 
 ** Final energy state of charge
-eq_soc_final(t, d)$(t_ha(t) and ord(t) eq card(t))..
+eq_soc_final(t, d)$(t_ha(t) and (ord(t) eq card(t)))..
         soc(t, d) =e= E_final(d);
 
 model CR /all/;
@@ -494,29 +496,14 @@ loop(t$(t_ha(t)),
 put /;
 loop(d,
     put d.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
         put (ch_total.l(t, d) - dis_total.l(t, d)):0:6, ","        
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
     put (ch_total.l(t, d) - dis_total.l(t, d)):0:6,
 );
 put /;
 );
-
-*<<<<<<<< HA_CF_model2 old
-
-$ontext
-table p_ext2(d,t)
-$ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\pext_2round.csv
-$offdelim
-;
-$offtext
-
-*Parameter p_ext2(d,t)  ;
-*p_ext2(d,t)= (p_ext_plus.l(t,d)-p_ext_minus.l(t,d));
-
-*========
 
 *table p_ext2(d,t)
 *$ondelim
@@ -524,7 +511,8 @@ $offtext
 *$offdelim
 *;
 
-*>>>>>>>> DA_CF_model2
+parameter p_ext2(d, t);
+p_ext2(d, t) = ch_total.l(t, d) - dis_total.l(t, d);
 
 ** Computation of the minimum and maximum net load injections
 loop((s, d)$(storage_map(d) eq ord(s)),
@@ -568,10 +556,10 @@ loop(t$(t_ha(t)),
 put /;
 loop(d,
     put d.tl:0:0, ","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
         put (minimum_load(t, d)):0:3, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour + horizon - 1 or ord(t) eq card(t))),
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
     put (minimum_load(t, d)):0:3,
 );
 put /;
@@ -588,10 +576,10 @@ loop(t$(t_ha(t)),
 put /;
 loop(d,
     put d.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour + horizon - 1 and ord(t) lt card(t)),
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
         put (maximum_load(t,d)):0:3, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour + horizon - 1 or ord(t) eq card(t))),
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t))))
     put (maximum_load(t,d)):0:3,
 );
 put /;
@@ -610,7 +598,7 @@ parameter power_flow_out(t, l),
 
 time_elapsed = timeElapsed;
 M_cong_aux(t, l)$(abs(pf.l(t, l)) - l_max(l) ge 0) = 1 + eps;
-M_cong_snpd_aux(t, l)$(abs(pf.l(t, l)) - l_max(l) ge 0 and snpd_lines_map(l) eq 1) = 1 + eps;
+M_cong_snpd_aux(t, l)$((abs(pf.l(t, l)) - l_max(l) ge 0) and (snpd_lines_map(l) eq 1)) = 1 + eps;
 mst = CR.modelstat;
 sst = CR.solvestat;
 power_flow_out(t, l) = pf.l(t, l)*s_base + eps;

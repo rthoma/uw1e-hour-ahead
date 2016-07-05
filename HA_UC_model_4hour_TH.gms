@@ -1,5 +1,7 @@
 ********************************************************************************
-*** CONGESTION RELIEF PROBLEM. DAY-AHEAD SCHEDULE                              *
+*** HA_UC_model_4hour_TH.gms                                                   *
+***                                                                            *
+*** STAGE 1 OF THE CONGESTION RELIEF PROBLEM IN THE HOUR-AHEAD FRAMEWORK       *
 ********************************************************************************
 
 $onempty
@@ -105,12 +107,12 @@ cost..
 
 ** Binary logic between start-up, shutdown, and commitment variables for
 ** periods greater than the starting hour
-bin_set1(t, i)$(t_ha(t) and ord(t) gt hour)..
+bin_set1(t, i)$(t_ha(t) and (ord(t) gt hour))..
         y(t, i) - z(t, i) =e= v(t, i) - v(t-1, i);
 
 ** Binary logic between start-up, shutdown, and commitment variables for
 ** the first period of the optimization horizon
-bin_set10(t, i)$(t_ha(t) and ord(t) = hour)..
+bin_set10(t, i)$(t_ha(t) and (ord(t) eq hour))..
         y(t, i) - z(t, i) =e= v(t, i) - onoff_t0(i);
 
 ** Relation between start-up and shudown variables in order to avoid simultaneous actions
@@ -130,31 +132,31 @@ block_output(t, i, b)$(t_ha(t))..
         g_lin(t, i, b) =l= g_max(i, b)*v(t, i);
 
 ** Initial conditions for the minimum up and down time constraints
-min_updown_1(t, i)$(t_ha(t) and L_up_min(i) + L_down_min(i) gt 0 and ord(t) le L_up_min(i) + L_down_min(i))..
+min_updown_1(t, i)$(t_ha(t) and (L_up_min(i) + L_down_min(i) gt 0) and (ord(t) le L_up_min(i) + L_down_min(i)))..
         v(t, i) =e= onoff_t0(i);
 
 ** Minimum up time constraints for the rest of the periods
-min_updown_2(t, i)$(t_ha(t) and ord(t) gt L_up_min(i))..
+min_updown_2(t, i)$(t_ha(t) and (ord(t) gt L_up_min(i)))..
         sum(tt$(ord(tt) ge ord(t) - g_up(i) + 1 and ord(tt) le ord(t)), y(tt, i)) =l= v(t, i);
 
 ** Minimum down time constraints for the rest of the periods
-min_updown_3(t, i)$(t_ha(t) and ord(t) gt L_down_min(i))..
+min_updown_3(t, i)$(t_ha(t) and (ord(t) gt L_down_min(i)))..
         sum(tt$(ord(tt) ge ord(t) - g_down(i) + 1 and ord(tt) le ord(t)), z(tt, i)) =l= 1 - v(t, i);
 
 ** Ramp down constraints for periods greater than the current hour
-ramp_limit_min(t, i)$(t_ha(t) and ord(t) gt hour)..
+ramp_limit_min(t, i)$(t_ha(t) and (ord(t) gt hour))..
         -ramp_down(i) =l= g(t, i) - g(t-1, i);
 
 ** Ramp up constraints for periods greater than the current hour
-ramp_limit_max(t, i)$(t_ha(t) and ord(t) gt hour)..
+ramp_limit_max(t, i)$(t_ha(t) and (ord(t) gt hour))..
         ramp_up(i) =g= g(t, i) - g(t-1, i);
 
 ** Ramp down constraints for the initial period
-ramp_limit_min_1(t, i)$(t_ha(t) and ord(t) eq hour)..
+ramp_limit_min_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
         -ramp_down(i) =l= g(t, i) - g_0(i);
 
 ** Ramp up constraints for the initial period
-ramp_limit_max_1(t, i)$(t_ha(t) and ord(t) eq hour)..
+ramp_limit_max_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
         ramp_up(i) =g= g(t, i) - g_0(i);
 
 ** Nodal power balance equations including the power output of conventional thermal units
@@ -296,11 +298,11 @@ loop(t$(t_ha(t)),
 put /;
 loop(i,
     put i.tl:0:0, ","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (g.l(t,i)):0:4,","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (g.l(t, i)):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (g.l(t,i)):0:4,
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
+    put (g.l(t, i)):0:4,
 );
 put /;
 );
@@ -315,11 +317,11 @@ loop(t$(t_ha(t)),
 put /;
 loop(i,
     put i.tl:0:0, ","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (g_lin.l(t,i,'b1')):0:4,","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (g_lin.l(t, i, 'b1')):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (g_lin.l(t,i,'b1')):0:4,
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
+    put (g_lin.l(t, i, 'b1')):0:4,
 );
 put /;
 );
@@ -329,16 +331,16 @@ FILE output2B /'C:\BPA_project\Test_connect_HA_ok\Data\glin_bisB.csv'/;
 put output2B
 put "** Power output of block 2 **"/;
 loop(t$(t_ha(t)),
-    put ",",t.tl:0:0,
+    put ",", t.tl:0:0,
 );
 put /;
 loop(i,
-    put i.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (g_lin.l(t,i,'b2')):0:4,","
+    put i.tl:0:0, ","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (g_lin.l(t, i, 'b2')):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (g_lin.l(t,i,'b2')):0:4,
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
+    put (g_lin.l(t, i, 'b2')):0:4,
 );
 put /;
 );
@@ -348,16 +350,16 @@ FILE output2C /'C:\BPA_project\Test_connect_HA_ok\Data\glin_bisC.csv'/;
 put output2C
 put "** Power output of block 3 **"/;
 loop(t$(t_ha(t)),
-    put ",",t.tl:0:0,
+    put ",", t.tl:0:0,
 );
 put /;
 loop(i,
-    put i.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (g_lin.l(t,i,'b3')):0:4,","
+    put i.tl:0:0, ","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (g_lin.l(t, i, 'b3')):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (g_lin.l(t,i,'b3')):0:4,
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
+    put (g_lin.l(t, i, 'b3')):0:4,
 );
 put /;
 );
@@ -367,16 +369,16 @@ FILE output3 /'C:\BPA_project\Test_connect_HA_ok\Data\slackwindbis.csv'/;
 put output3
 put "** Wind spillage **"/;
 loop(t$(t_ha(t)),
-    put ",",t.tl:0:0,
+    put ",", t.tl:0:0,
 );
 put /;
 loop(w,
-    put w.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (slack_wind.l(w,t)):0:4,","
+    put w.tl:0:0, ","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (slack_wind.l(w, t)):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (slack_wind.l(w,t)):0:4,
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
+    put (slack_wind.l(w, t)):0:4,
 );
 put /;
 );
@@ -386,16 +388,16 @@ FILE output4 /'C:\BPA_project\Test_connect_HA_ok\Data\slacksolarbis.csv'/;
 put output4
 put "** Solar spillage **"/;
 loop(t$(t_ha(t)),
-    put ",",t.tl:0:0,
+    put ",", t.tl:0:0,
 );
 put /;
 loop(r,
-    put r.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (slack_solar.l(r,t)):0:4,","
+    put r.tl:0:0, ","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (slack_solar.l(r, t)):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (slack_solar.l(r,t)):0:4,
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
+    put (slack_solar.l(r, t)):0:4,
 );
 put /;
 );
@@ -405,16 +407,16 @@ FILE output5 /'C:\BPA_project\Test_connect_HA_ok\Data\slackfixedbis.csv'/;
 put output5
 put "** Fixed spillage **"/;
 loop(t$(t_ha(t)),
-    put ",",t.tl:0:0,
+    put ",", t.tl:0:0,
 );
 put /;
 loop(f,
-    put f.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (slack_fixed.l(f,t)):0:4,","
+    put f.tl:0:0, ","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (slack_fixed.l(f, t)):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (slack_fixed.l(f,t)):0:4,
+loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1) or (ord(t) eq card(t))),
+    put (slack_fixed.l(f, t)):0:4,
 );
 put /;
 );
@@ -424,16 +426,16 @@ FILE output6 /'C:\BPA_project\Test_connect_HA_ok\Data\powerflow.csv'/;
 put output6
 put "** Power flow **"/;
 loop(t$(t_ha(t)),
-    put ",",t.tl:0:0,
+    put ",", t.tl:0:0,
 );
 put /;
 loop(l,
-    put l.tl:0:0,","
-    loop(t$(ord(t) ge hour and ord(t) lt hour+horizon-1 and ord(t) lt card(t)),
-        put (pf.l(t,l)):0:3,","
+    put l.tl:0:0, ","
+    loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
+        put (pf.l(t, l)):0:3, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1 or ord(t) eq card(t))),
-    put (pf.l(t,l)):0:3,
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
+    put (pf.l(t, l)):0:3,
 );
 put /;
 );

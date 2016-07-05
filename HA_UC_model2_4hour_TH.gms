@@ -1,5 +1,7 @@
 ********************************************************************************
-*** CONGESTION RELIEF PROBLEM. DAY-AHEAD SCHEDULE                              *
+*** HA_UC_model2_4hour_TH.gms                                                  *
+***                                                                            *
+*** STAGE 4 OF THE CONGESTION RELIEF PROBLEM IN THE HOUR-AHEAD FRAMEWORK       *
 ********************************************************************************
 
 $onempty
@@ -19,6 +21,9 @@ option limrow = 0,
 ********************************************************************************
 *** READING INPUT DATA                                                         *
 ********************************************************************************
+
+** We assume that the total injections/extractions from ES are accepted by DEPO
+** In the general case, DEPO would provide a slightly different schedule or not
 
 $include C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
 
@@ -108,13 +113,13 @@ cost..
 ** Binary logic between start-up, shutdown, and commitment variables for
 ** periods greater than the starting hour
 
-bin_set1(t, i)$(t_ha(t) and ord(t) gt hour)..
+bin_set1(t, i)$(t_ha(t) and (ord(t) gt hour))..
         y(t, i) - z(t, i) =e= v(t, i) - v(t-1, i);
 
 ** Binary logic between start-up, shutdown, and commitment variables for
 ** the first period of the optimization horizon
 
-bin_set10(t, i)$(t_ha(t) and ord(t) = hour)..
+bin_set10(t, i)$(t_ha(t) and (ord(t) eq hour))..
         y(t, i) - z(t, i) =e= v(t, i) - onoff_t0(i);
 
 ** Relation between start-up and shudown variables in order to avoid simultaneous actions
@@ -134,31 +139,31 @@ block_output(t, i, b)$(t_ha(t))..
         g_lin(t, i, b) =l= g_max(i, b)*v(t, i);
 
 ** Initial conditions for the minimum up and down time constraints
-min_updown_1(t, i)$(t_ha(t) and L_up_min(i) + L_down_min(i) gt 0 and ord(t) le L_up_min(i) + L_down_min(i))..
+min_updown_1(t, i)$(t_ha(t) and (L_up_min(i) + L_down_min(i) gt 0) and (ord(t) le L_up_min(i) + L_down_min(i)))..
         v(t, i) =e= onoff_t0(i);
 
 ** Minimum up time constraints for the rest of the periods
-min_updown_2(t, i)$(t_ha(t) and ord(t) gt L_up_min(i))..
-        sum(tt$(ord(tt) ge ord(t) - g_up(i) + 1 and ord(tt) le ord(t)), y(tt, i)) =l= v(t, i);
+min_updown_2(t, i)$(t_ha(t) and (ord(t) gt L_up_min(i)))..
+        sum(tt$((ord(tt) ge ord(t) - g_up(i) + 1) and (ord(tt) le ord(t))), y(tt, i)) =l= v(t, i);
 
 ** Minimum down time constraints for the rest of the periods
 min_updown_3(t, i)$(t_ha(t) and ord(t) gt L_down_min(i))..
-        sum(tt$(ord(tt) ge ord(t) - g_down(i) + 1 and ord(tt) le ord(t)), z(tt, i)) =l= 1 - v(t, i);
+        sum(tt$((ord(tt) ge ord(t) - g_down(i) + 1) and (ord(tt) le ord(t))), z(tt, i)) =l= 1 - v(t, i);
 
 ** Ramp down constraints for periods greater than the current hour
-ramp_limit_min(t, i)$(t_ha(t) and ord(t) gt hour)..
+ramp_limit_min(t, i)$(t_ha(t) and (ord(t) gt hour))..
         -ramp_down(i) =l= g(t, i) - g(t-1, i);
 
 ** Ramp up constraints for periods greater than the current hour
-ramp_limit_max(t, i)$(t_ha(t) and ord(t) gt hour)..
+ramp_limit_max(t, i)$(t_ha(t) and (ord(t) gt hour))..
         ramp_up(i) =g= g(t, i) - g(t-1, i);
 
 ** Ramp down constraints for the initial period
-ramp_limit_min_1(t, i)$(t_ha(t) and ord(t) eq hour)..
+ramp_limit_min_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
         -ramp_down(i) =l= g(t, i) - g_0(i);
 
 ** Ramp up constraints for the initial period
-ramp_limit_max_1(t, i)$(t_ha(t) and ord(t) eq hour)..
+ramp_limit_max_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
         ramp_up(i) =g= g(t, i) - g_0(i);
 
 ** Nodal power balance constraint
@@ -289,7 +294,6 @@ execute_unload "uc_ha_day2_hour24_constrained_relieved.gdx"
 ********************************************************************************
 *** OUTPUT FILES TO COMPUTE THE INITIAL CONDITIONS FOR NEXT WINDOW             *
 ********************************************************************************
-
 
 FILE output_init1 /'C:\BPA_project\Test_connect_HA_ok\Data\g_0_previous_aux2.inc'/;
 put output_init1
