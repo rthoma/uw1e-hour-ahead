@@ -2,7 +2,7 @@
 *** SETS                                                                       *
 ********************************************************************************
 
-set t          index of time periods /t1*t27/;
+set t          index of time periods /t1*t24/;
 set t_ha(t)    index of time periods in the hour ahead horizon;
 set i          index of generators /i1*i38/;
 set b          index of generator blocks /b1*b3/;
@@ -177,14 +177,15 @@ table g_0_day(day, i) generator generation at t = 0
 $include C:\BPA_project\Test_connect_HA_ok\Data\aux10.inc
 ;
 
-parameter onoff_t0_day(day, i) on-off status at t=0;
+parameter onoff_t0_day(day, i) on-off status at t = 0;
+parameter L_up_min_day(day, i) used for minimum up time constraints;
+parameter L_down_min_day(day, i) used for minimum up time constraints;
+
 onoff_t0_day(day, i)$(count_on_init_day(day, i) gt 0) = 1;
 
-parameter L_up_min_day(day, i) used for minimum up time constraints;
 L_up_min_day(day, i) =
     min(card(t), (g_up(i) - count_on_init_day(day, i))*onoff_t0_day(day, i));
 
-parameter L_down_min_day(day, i) used for minimum up time constraints;
 L_down_min_day(day, i) =
     min(card(t), (g_down(i) - count_off_init_day(day, i))*(1 - onoff_t0_day(day, i)));
 
@@ -478,8 +479,7 @@ $include C:\BPA_project\Test_connect_HA_ok\Data\zone_map.inc
 
 parameter storage_map(d),
           storage_area(d),
-          storage_zone(d)
-;
+          storage_zone(d);
 
 storage_map(d) = sum(column, storage_map_aux(d, column));
 storage_area(d) = sum(column, area_name_storage(d, column));
@@ -510,6 +510,7 @@ $offdelim
 parameter E_final(d) /
 $ondelim
 $include C:\BPA_project\Test_connect_HA_ok\Data\E_final.csv
+$offdelim
 /;
 
 ** Charging efficiency of the energy storage devices
@@ -579,7 +580,7 @@ parameter onoff_t1_previous(i);
 onoff_t1_previous(i) = sum(column, onoff_t1_previous_aux(i, column));
 
 ** Up time in the previous period
-table count_on_init_previous_aux(i, column) number of hours unit has been on at the previous period of the considered optimization horizon
+table count_on_init_previous_aux(i, column) num hours on at the previous period of the considered optimization horizon
 $include C:\BPA_project\Test_connect_HA_ok\Data\count_on_init_previous_aux2.inc
 ;
 
@@ -588,7 +589,7 @@ parameter count_on_init_previous(i);
 count_on_init_previous(i) = sum(column, count_on_init_previous_aux(i, column));
 
 ** Down time in the previous period
-table count_off_init_previous_aux(i, column) number of hours unit has been off at the previous period of the considered optimization horizon
+table count_off_init_previous_aux(i, column) num hours off at the previous period of the considered optimization horizon
 $include C:\BPA_project\Test_connect_HA_ok\Data\count_off_init_previous_aux2.inc
 ;
 
@@ -651,7 +652,7 @@ scalar hour /
 $include C:\BPA_project\Test_connect_HA_ok\Data\Hour_number.csv
 /;
 
-t_ha(t)$((ord(t) ge hour) and (ord(t) lt hour+horizon)) = yes;
+t_ha(t)$((ord(t) ge hour) and (ord(t) lt hour+horizon) and (ord(t) le 24)) = yes;
 
 parameter g_max(i, b),
           g_cap(t, i),
@@ -707,21 +708,21 @@ loop(day$(ord(day) eq N+counter),
 ** If hour is greater than 24, we read the data as presented in the
 ** excel file or inc files for day (N+counter+1)
 
-    demand(s, t)$(t_ha(t) and (ord(t) gt 24)) =
-        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
-            d_day(dayd, s, tt)/s_base + sum(d$(storage_map(d) eq ord(s)), injection_DA_2(d, tt)));
-            
-    sol_deterministic(t, r)$(t_ha(t) and (ord(t) gt 24)) =
-        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
-            sol_deterministic_day(dayd, tt, r)/s_base);
-            
-    fix_deterministic(f, t)$(t_ha(t) and (ord(t) gt 24)) =
-        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
-            abs(fix_deterministic_day(dayd, f, tt))/s_base);
-            
-    wind_deterministic(t, w)$(t_ha(t) and (ord(t) gt 24)) =
-        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
-            wind_deterministic_day(dayd, tt, w)/s_base);
+*    demand(s, t)$(t_ha(t) and (ord(t) gt 24)) =
+*        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
+*            d_day(dayd, s, tt)/s_base + sum(d$(storage_map(d) eq ord(s)), injection_DA_2(d, tt)));
+*            
+*    sol_deterministic(t, r)$(t_ha(t) and (ord(t) gt 24)) =
+*        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
+*            sol_deterministic_day(dayd, tt, r)/s_base);
+*            
+*    fix_deterministic(f, t)$(t_ha(t) and (ord(t) gt 24)) =
+*        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
+*            abs(fix_deterministic_day(dayd, f, tt))/s_base);
+*            
+*    wind_deterministic(t, w)$(t_ha(t) and (ord(t) gt 24)) =
+*        sum((tt, dayd)$((ord(dayd) eq N+counter+1) and (ord(tt) eq ord(t)-24)),
+*            wind_deterministic_day(dayd, tt, w)/s_base);
 
 ** If hour is equal to 1 and the day is the first one, ie, N+counter equal to 2
 ** We read the initial conditions from the day-ahead stage
