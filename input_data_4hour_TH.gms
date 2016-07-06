@@ -2,26 +2,27 @@
 *** SETS                                                                       *
 ********************************************************************************
 
-set t          index of time periods /t1*t24/;
-set t_ha(t)    index of time periods in the hour ahead horizon;
-set i          index of generators /i1*i38/;
-set b          index of generator blocks /b1*b3/;
-set s          index of buses /s1*s2764/;
-set l          index of transmission lines /l1*l3318/;
-set w          index of wind generators /w1*w73/;
-set r          index of solar generators /r1*r5/;
-set f          index of fixed generators /f1*f440/;
-set day        day counter /day1*day5/;
-**set day      day counter /day1*day366/; ** full year
+set t                index of time periods /t1*t24/;
+set t_ha(t)          index of time periods in the hour ahead horizon;
+set i                index of generators /i1*i38/;
+set b                index of generator blocks /b1*b3/;
+set s                index of buses /s1*s2764/;
+set l                index of transmission lines /l1*l3318/;
+set w                index of wind generators /w1*w73/;
+set r                index of solar generators /r1*r5/;
+set f                index of fixed generators /f1*f440/;
+set day              day counter /day1*day5/;
+**set day            day counter /day1*day366/; ** full year
 
-set from_to    lines from and to /from, to/;
-set column     generator connected to bus /col/;
-set wcolumn    wind connected to bus /wcol/;
-set rcolumn    solar connected to bus /rcol/;
-set fcolumn    fixed connected to bus /fcol/;
-set iter       number of iterations /iter1*iter5/;
-** set iter    number of iterations /iter1*iter366/; ** full year
-set d          set of storage units /d1/;
+set from_to          lines from and to /from, to/;
+set column           generator connected to bus /col/;
+set wcolumn          wind connected to bus /wcol/;
+set rcolumn          solar connected to bus /rcol/;
+set fcolumn          fixed connected to bus /fcol/;
+set iter             number of iterations /iter1*iter5/;
+** set iter          number of iterations /iter1*iter366/; ** full year
+set d                set of storage units /d1/;
+set snopud(s)        set of buses that belong to snopud area /s1831*s1958/;
 
 ********************************************************************************
 *** GENERATOR DATA                                                             *
@@ -76,7 +77,7 @@ $include C:\BPA_project\Test_connect_HA_ok\Data\start_up_sw.inc
 
 ** Transformation of the previous matrix into a vector
 parameter suc_sw(i);
-suc_sw(i)=sum(column, suc_sw_aux(i, column));
+suc_sw(i) = sum(column, suc_sw_aux(i, column));
 
 ** Time varying generation count off initial
 table count_off_init_day(day, i) number of time periods each generator has been off
@@ -177,17 +178,20 @@ table g_0_day(day, i) generator generation at t = 0
 $include C:\BPA_project\Test_connect_HA_ok\Data\aux10.inc
 ;
 
+** Generator on-off status at t = 0
 parameter onoff_t0_day(day, i) on-off status at t = 0;
-parameter L_up_min_day(day, i) used for minimum up time constraints;
-parameter L_down_min_day(day, i) used for minimum up time constraints;
-
 onoff_t0_day(day, i)$(count_on_init_day(day, i) gt 0) = 1;
 
+** Parameter used for minimum up-time constraints
+parameter L_up_min_day(day, i) used for minimum up time constraints;
 L_up_min_day(day, i) =
     min(card(t), (g_up(i) - count_on_init_day(day, i))*onoff_t0_day(day, i));
 
+** Parameter used for minimum down-time constraints
+parameter L_down_min_day(day, i) used for minimum up time constraints;
 L_down_min_day(day, i) =
     min(card(t), (g_down(i) - count_off_init_day(day, i))*(1 - onoff_t0_day(day, i)));
+
 
 ********************************************************************************
 *** RICARDO COMMENTED OUT THIS CODE, IT LOADS THE ORIGINAL BPA SYSTEM MODEL    *
@@ -477,12 +481,13 @@ table zone_name_storage(d, column)
 $include C:\BPA_project\Test_connect_HA_ok\Data\zone_map.inc
 ;
 
-parameter storage_map(d),
-          storage_area(d),
-          storage_zone(d);
-
+parameter storage_map(d);
 storage_map(d) = sum(column, storage_map_aux(d, column));
+
+parameter storage_area(d);
 storage_area(d) = sum(column, area_name_storage(d, column));
+
+parameter storage_zone(d);
 storage_zone(d) = sum(column, zone_name_storage(d, column));
 
 ** ES maximum power rating
@@ -594,45 +599,45 @@ $include C:\BPA_project\Test_connect_HA_ok\Data\count_off_init_previous_aux2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
+parameter count_off_init_previous(i);
+count_off_init_previous(i) = sum(column, count_off_init_previous_aux(i, column));
+
+** Transformation of the previous matrix into a vector
 ** count_on_init_aux(i)  -- number of hours unit has been on at the previous
 **                          period of the considered optimization horizon
 ** count_off_init_aux(i) -- number of hours unit has been off at the previous
 **                          period of the considered optimization horizon
 
-parameter count_off_init_previous(i);
 parameter count_on_init_aux(i);
+count_on_init_aux(i)$(onoff_t1_previous(i) eq 0) = 1;
+
+count_on_init_aux(i)$((onoff_t1_previous(i) eq onoff_t0_previous(i)) and
+                      (onoff_t1_previous(i) eq 1)) = count_on_init_previous(i) + 1;
+
+count_on_init_aux(i)$((onoff_t1_previous(i) ne onoff_t0_previous(i)) and
+                      (onoff_t1_previous(i) eq 1)) = 1;
+
 parameter count_off_init_aux(i);
+count_off_init_aux(i)$((onoff_t1_previous(i) eq onoff_t0_previous(i)) and
+                       (onoff_t1_previous(i) eq 0)) = count_off_init_previous(i) + 1;
 
-count_off_init_previous(i) = sum(column, count_off_init_previous_aux(i, column));
-
-count_on_init_aux(i)$(onoff_t1_previous(i) eq
-                      onoff_t0_previous(i) and
-                      onoff_t1_previous(i) eq 1) = count_on_init_previous(i) + 1;
-
-count_on_init_aux(i)$(onoff_t1_previous(i) ne
-                      onoff_t0_previous(i) and
-                      onoff_t1_previous(i) eq 1) = 1;
-
-count_off_init_aux(i)$(onoff_t1_previous(i) eq
-                       onoff_t0_previous(i) and
-                       onoff_t1_previous(i) eq 0) = count_off_init_previous(i) + 1;
-
-count_off_init_aux(i)$(onoff_t1_previous(i) ne
-                       onoff_t0_previous(i) and
-                       onoff_t1_previous(i) eq 0) = 1;
+count_off_init_aux(i)$((onoff_t1_previous(i) ne onoff_t0_previous(i)) and
+                       (onoff_t1_previous(i) eq 0)) = 1;
 
 count_off_init_aux(i)$(onoff_t1_previous(i) eq 1) = 0;
 
-count_on_init_aux(i)$(onoff_t1_previous(i) eq 0) = 1;
 
 ********************************************************************************
 *** SCALARS                                                                    *
 ********************************************************************************
 
 ** We assume a VoRS equal to 20 $/MWh
+**
 ** The power base is equal to 100 MW
+**
 ** We consider a 4 hour optimization horizon (could be 6 hr, 8hr, etc.)
-** parameter counter is always equal to 2 because the Day Number N starts in 0
+**
+** Parameter counter is always equal to 2 because the Day Number N starts in 0
 ** and we want the information related to the second day of the data from excel
 
 scalars penalty_pf    penalty factor /2000/

@@ -42,7 +42,7 @@ positive variables
         slack_solar(r, t)       solar spillage
         slack_wind(w, t)        wind spillage
         slack_fixed(f, t)       fixed spillage
-        slack_flow(l, t)        transmission capacity slack variables 
+        slack_flow(l, t)        transmission capacity slack variables
         slack_pbal(s, t)        power balance equation slack variables
 ;
 
@@ -121,7 +121,7 @@ bin_set2(t, i)$(t_ha(t))..
 
 ** Definition of the power output as the summation of the power output of each of the blocks
 gen_sum(t, i)$(t_ha(t))..
-        g(t, i) =e= sum(b,g_lin(t, i, b));
+        g(t, i) =e= sum(b, g_lin(t, i, b));
 
 ** Minimum bound for the power output of conventional thermal units
 gen_min(t, i)$(t_ha(t))..
@@ -159,22 +159,21 @@ ramp_limit_min_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
 ramp_limit_max_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
         ramp_up(i) =g= g(t, i) - g_0(i);
 
-** Nodal power balance equations including the power output of conventional thermal units
-** fixed generation, solar generation, wind generation, in and out flows, and the nodal demand
-
+** Nodal power balance equations including the power output of conventional
+** thermal units, fixed generation, solar generation, wind generation,
+** in and out flows, and the nodal demand
 power_balance(t, s)$(t_ha(t))..
-*   demand(s, t) - slack_pbal(s, t)
+*   demand(s, t) - slack_pbal(s, t) =e=
     demand(s, t) =e=
           sum(i$(gen_map(i) = ord(s)), g(t, i))
-        + sum(f$(fix_map(f) = ord(s)), fix_deterministic(f, t) - slack_fixed(f, t))    
-        + sum(r$(sol_map(r) = ord(s)), sol_deterministic(t, r) - slack_solar(r, t))    
+        + sum(f$(fix_map(f) = ord(s)), fix_deterministic(f, t) - slack_fixed(f, t))
+        + sum(r$(sol_map(r) = ord(s)), sol_deterministic(t, r) - slack_solar(r, t))
         + sum(w$(win_map(w) = ord(s)), wind_deterministic(t, w) - slack_wind(w, t))
         - sum(l$(line_map(l, 'from') = ord(s)), pf(t, l))
         + sum(l$(line_map(l, 'to') = ord(s)), pf(t, l))
 ;
 
 ** Definition of the power flow of each line in terms of the voltage phase angles
-
 line_flow(t, l)$(t_ha(t))..
     pf(t, l) =e= admittance(l)*(sum(s$(line_map(l, 'from') = ord(s)), theta(t, s))
                               - sum(s$(line_map(l, 'to') = ord(s)), theta(t, s)));
@@ -230,50 +229,70 @@ option threads = 1;
 ********************************************************************************
 
 ** Defintion of parameters that we want to output
-parameter power_output_out(t, i),
-          slack_solar_out_total,
-          slack_wind_out_total,
-          slack_fixed_out_total,
-          slack_solar_out(t, r),
-          slack_wind_out(t, w),
-          slack_fixed_out(t, f),
-          power_flow_out(t, l),
-          mst,
-          sst,
+parameter total_cost,
+          generation_cost,
           time_elapsed,
           M_cong_aux(t, l),
           M_cong_snpd_aux(t, l),
           flow_cong_output(l, t),
-          total_cost,
-          generation_cost
-;
+          mst,
+          sst,
+          power_flow_out(t, l),
+          power_output_out(t, i),
+          slack_solar_out(t, r),
+          slack_wind_out(t, w),
+          slack_fixed_out(t, f),
+          slack_solar_out_total,
+          slack_wind_out_total,
+          slack_fixed_out_total;
 
 ** Solve the minimization problem by using mixed-integer linear programming
 solve TEPO_UC using mip minimizing obj;
 
 total_cost = obj.L;
-generation_cost = sum((t, i)$(t_ha(t)), suc_sw(i)*y.l(t, i) + a(i)*v.l(t, i) + sum(b,g_lin.l(t, i, b)*k(i, b))) + eps;
+
+generation_cost = sum((t, i)$(t_ha(t)), suc_sw(i)*y.l(t, i) + a(i)*v.l(t, i)
+                + sum(b, g_lin.l(t, i, b)*k(i, b))) + eps;
+
 time_elapsed = timeElapsed;
-M_cong_aux(t, l)$(t_ha(t) and abs(pf.l(t, l)) - l_max(l) ge 0) = 1 + eps;
-M_cong_snpd_aux(t, l)$(t_ha(t) and abs(pf.l(t, l)) - l_max(l) ge 0 and snpd_lines_map(l) eq 1) = 1 + eps;
-*flow_cong_output(l, t)$(t_ha(t) and M_cong_aux(t, l) eq 1) = 0 + eps;
-flow_cong_output(l, t)$(t_ha(t) and M_cong_aux(t, l) ne 0) = pf.l(t, l)*s_base + eps;
+
+M_cong_aux(t, l)$(t_ha(t) and (abs(pf.l(t, l)) - l_max(l) ge 0)) = 1 + eps;
+
+M_cong_snpd_aux(t, l)$(t_ha(t) and (abs(pf.l(t, l)) - l_max(l) ge 0)
+                               and (snpd_lines_map(l) eq 1)) = 1 + eps;
+
+flow_cong_output(l, t)$(t_ha(t) and (M_cong_aux(t, l) eq 1)) = 0 + eps;
+
+flow_cong_output(l, t)$(t_ha(t) and (M_cong_aux(t, l) ne 0)) = pf.l(t, l)*s_base + eps;
+
 mst = TEPO_UC.modelstat;
+
 sst = TEPO_UC.solvestat;
+
 power_flow_out(t, l)$(t_ha(t)) = pf.l(t, l)*s_base + eps;
+
 power_output_out(t, i)$(t_ha(t)) = g.l(t, i)*s_base + eps;
+
 slack_solar_out(t, r)$(t_ha(t)) = slack_solar.l(r, t)*s_base + eps;
+
 slack_wind_out(t, w)$(t_ha(t)) = slack_wind.l(w, t)*s_base + eps;
+
 slack_fixed_out(t, f)$(t_ha(t)) = slack_fixed.l(f, t)*s_base + eps;
+
 slack_solar_out_total = sum((r, t)$(t_ha(t)), slack_solar.l(r, t))*s_base + eps;
+
 slack_wind_out_total = sum((w, t)$(t_ha(t)), slack_wind.l(w, t))*s_base + eps;
+
 slack_fixed_out_total = sum((f, t)$(t_ha(t)), slack_fixed.l(f, t))*s_base + eps;
 
 ** Output of results in a gdx file
-execute_unload "uc_ha_day2_hour24_constrained.gdx"
+execute_unload "C:\BPA_project\Test_connect_HA_ok\uc_ha_day2_hour24_constrained.gdx"
     slack_solar_out_total,
     slack_wind_out_total,
     slack_fixed_out_total,
+    slack_solar_out,
+    slack_wind_out,
+    slack_fixed_out,
     power_flow_out,
     mst,
     sst,
@@ -415,7 +434,7 @@ loop(f,
     loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
         put (slack_fixed.l(f, t)):0:4, ","
 );
-loop(t$(t_ha(t) and (ord(t) eq hour+horizon-1) or (ord(t) eq card(t))),
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
     put (slack_fixed.l(f, t)):0:4,
 );
 put /;

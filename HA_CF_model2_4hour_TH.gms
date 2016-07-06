@@ -78,10 +78,10 @@ parameter
         slack_wind_bis(w, t)         wind spillage in the pre-contingency state
         slack_fixed_bis(f, t)        fixed spillage in the pre-contingency state
         gbis(t, i)                   power output of generators in the pre-contingency state
-        M_cong_aux(t, l)             parameter that is equal to 1 if the line l at period t is congested and 0 otherwise 
+        M_cong_aux(t, l)             parameter that is equal to 1 if the line l at period t is congested and 0 otherwise
         M_cong(t)                    parameter that is equal to 1 if there is at least one line congested in period t
 ;
-        
+
 gbis(t, i) = g_bis2(i, t);
 glin_bis(t, i, 'b1') = glin_bis2A(i, t);
 glin_bis(t, i, 'b2') = glin_bis2B(i, t);
@@ -101,74 +101,75 @@ M_cong(t)$(sum(l, M_cong_aux(t, l)) gt 0) = 1;
 
 table ch_DEPO(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\ch_DEPO.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\ch_DEPO.csv
 $offdelim
 ;
 
 table dis_DEPO(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\dis_DEPO.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\dis_DEPO.csv
 $offdelim
 ;
 
 table C_ch(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\C_ch.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\C_ch.csv
 $offdelim
 ;
 
 table C_dis(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\C_dis.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\C_dis.csv
 $offdelim
 ;
 
 table C_SC(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\C_SC.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\C_SC.csv
 $offdelim
 ;
 
 table C_SD(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\C_SD.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\C_SD.csv
 $offdelim
 ;
 
 table P_ch(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\P_ch.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\P_ch.csv
 $offdelim
 ;
 
 table P_dis(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\P_dis.csv
+$include C:\BPA_project\Test_connect_HA_ok\Data\P_dis.csv
 $offdelim
 ;
 
 ** We define and compute the bounds used in the current model for the ES devices
-parameters Bound_ch(t, d),
-           Bound_dis(t, d),
-           Bound_SD(t, d),
-           Bound_SC(t, d)
-;
 
+parameter Bound_ch(t, d);
 Bound_ch(t, d) = (ES_power_max(d)*s_base - ch_DEPO(d, t))$(ch_DEPO(d, t) gt 0)
                + (ES_power_max(d)*s_base)$(dis_DEPO(d, t) gt 0)
                + (ES_power_max(d)*s_base)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d, t) eq 0));
 
+parameter Bound_dis(t, d);
 Bound_dis(t, d) = (ES_power_max(d)*s_base)$(ch_DEPO(d, t) gt 0)
                 + (ES_power_max(d)*s_base - dis_DEPO(d, t))$(dis_DEPO(d, t) gt 0)
                 + (ES_power_max(d)*s_base)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d,t) eq 0));
 
+parameter Bound_SD(t, d);
 Bound_SD(t, d) = (0)$(ch_DEPO(d, t) gt 0)
                + (dis_DEPO(d, t))$(dis_DEPO(d, t) gt 0)
                + (0)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d, t) eq 0));
 
+parameter Bound_SC(t, d);
 Bound_SC(t, d) = (ch_DEPO(d, t))$(ch_DEPO(d, t) gt 0)
                + (0)$(dis_DEPO(d, t) gt 0)
                + (0)$((dis_DEPO(d, t) eq 0) and (ch_DEPO(d, t) eq 0));
+
+** Normalizing quantities using the system base
 
 Bound_ch(t, d) = Bound_ch(t, d) / s_base;
 Bound_dis(t, d) = Bound_dis(t, d) / s_base;
@@ -194,6 +195,7 @@ variables
         theta(t, s)        voltage angles
 ;
 
+
 positive variables
         ch_total(t, d)                   power extracted at the bus where device d is located
         dis_total(t, d)                  power extracted at the bus where device d in located
@@ -212,7 +214,7 @@ positive variables
         dis_TEPO_SC(t, d)                stop charging
         ch_TEPO(t, d)                    charging from tepo
         dis_TEPO(t, d)                   discharging from tepo
-        soc(t, d)                        energy storage state of charge                                                  
+        soc(t, d)                        energy storage state of charge
 ;
 
 
@@ -260,7 +262,7 @@ equations
         ch_TEPO_limit(t, d)              charging from tepo limit
         dis_TEPO_limit(t, d)             discharging from tepo limit
         soc_limit(t, d)                  energy state of charge limit
-        eq_soc_final(t, d)               final energy state of charge                                             
+        eq_soc_final(t, d)               final energy state of charge
 ;
 
 
@@ -453,7 +455,7 @@ ch_TEPO_limit(t, d)$(t_ha(t))..
 ** TEPO discharging limit
 dis_TEPO_limit(t, d)$(t_ha(t))..
         dis_TEPO(t, d) =l= Bound_dis(t, d);
-    
+
 ** ES energy state of charge limit
 soc_limit(t, d)$(t_ha(t))..
         soc(t, d) =l= Emax(d);
@@ -497,7 +499,7 @@ put /;
 loop(d,
     put d.tl:0:0,","
     loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
-        put (ch_total.l(t, d) - dis_total.l(t, d)):0:6, ","        
+        put (ch_total.l(t, d) - dis_total.l(t, d)):0:6, ","
 );
 loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
     put (ch_total.l(t, d) - dis_total.l(t, d)):0:6,
@@ -519,7 +521,7 @@ loop((s, d)$(storage_map(d) eq ord(s)),
     minimum_load_aux(t, s)$(t_ha(t) and ((ch_total.l(t, d) - dis_total.l(t, d)) gt 0)) =
         (demand(s, t) + (ch_total.l(t, d) - dis_total.l(t, d)))*s_base + eps;
     minimum_load_aux(t, s)$(t_ha(t) and ((ch_total.l(t, d) - dis_total.l(t, d)) lt 0)) =
-        (demand(s, t) - ES_power_max(d))*s_base + eps; 
+        (demand(s, t) - ES_power_max(d))*s_base + eps;
     minimum_load_aux(t, s)$(t_ha(t) and ((ch_total.l(t, d) - dis_total.l(t, d)) eq 0)) =
         demand(s, t)*s_base + eps;
 );
