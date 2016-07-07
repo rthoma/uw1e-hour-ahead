@@ -458,17 +458,13 @@ PlaneRownr=-1
 [RP:INPUT_DATA]
 1=
 
-[OPENWINDOW_1]
-MAXIM=0
-TOP=0
-LEFT=0
-HEIGHT=1273
-WIDTH=2140
-
-[RP:HA_UC_MODEL_4HOUR_TH]
+[RP:HA_CF_MODEL2]
 1=
 
-[RP:HA_CF_MODEL2]
+[RP:INPUT_DATA_4HOUR_TH]
+1=
+
+[RP:HA_UC_MODEL_4HOUR_TH]
 1=
 
 [RP:HA_CF_MODEL_4HOUR_TH]
@@ -480,16 +476,23 @@ WIDTH=2140
 [RP:HA_UC_MODEL2_4HOUR_TH]
 1=
 
-[RP:INPUT_DATA_4HOUR_TH]
-1=
-
 [MRUFILES]
 1=C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
-2=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.lst
-3=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.gms
-4=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.lst
-5=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.gms
-6=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.gms
-7=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.lst
-8=C:\Users\Admin\Documents\uw1e_ricardo_data\BPA_project_FOR_RYAN\Test_connect_HA_ok\HA_CF_model2.gms
-9=C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.lst
+2=C:\Users\Admin\Documents\uw1e_ricardo_data\BPA_project_FOR_RYAN\Test_connect_HA_ok\HA_CF_model2.gms
+3=C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.lst
+
+[OPENWINDOW_1]
+FILE0=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.gms
+FILE1=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.lst
+FILE2=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.gms
+FILE3=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.lst
+FILE4=C:\BPA_project\Test_connect_HA_ok\HA_UC_model_4hour_TH.gms
+FILE5=C:\BPA_project\Test_connect_HA_ok\HA_UC_model_4hour_TH.lst
+FILE6=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.gms
+FILE7=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.lst
+FILE8=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.lst
+MAXIM=0
+TOP=52
+LEFT=52
+HEIGHT=880
+WIDTH=2140

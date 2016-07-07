@@ -615,7 +615,7 @@ count_off_init_aux(i)$((onoff_t1_previous(i) ne onoff_t0_previous(i)) and
 
 table injection_DA(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\pext2_round.csv
+$include C:\BPA_project\Test_connect_DA_new_ok\Data\pext_2round.csv
 $offdelim
 ;
 
