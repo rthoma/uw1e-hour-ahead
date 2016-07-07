@@ -31,7 +31,7 @@ set snopud(s)        set of buses that belong to snopud area /s1831*s1958/;
 ** Locations for generating units in the transmission network
 table gen_map_aux(i, column) generator map
 *$call =xls2gms r=Generator_Map!e2:f40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\gmap2.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\gmap2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\gmap2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -42,27 +42,27 @@ gen_map(i) = sum(column, gen_map_aux(i, column));
 table g_max_day(day, i, b) generator block generation limit
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Generator_CostCurve!a2:f192 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\block_max.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\block_max.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\block_max.inc
 ;
 
 ** Time varying generation capacity (forced outage information included)
 table g_cap_day(day, t, i) generator capacity
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Generator_Pmax!a2:ao122 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\gcap.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\gcap.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\gcap.inc
 ;
 
 ** Time varying generation cost curve price block
 table k_day(day, i, b) slope of each generator cost curve block
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Generator_CostCurve!i2:n192 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\k.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\k.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\k.inc
 ;
 
 ** Start-up cost of generator i
 table suc_sw_aux(i, column) generator stepwise start-up cost
 *$call =xls2gms r=Generator_Data!au2:av40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\start_up_sw.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\start_up_sw.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\start_up_sw.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -73,20 +73,20 @@ suc_sw(i) = sum(column, suc_sw_aux(i, column));
 table count_off_init_day(day, i) number of time periods each generator has been off
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Generator_InitOff!a2:am7 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux2.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux2.inc
 ;
 
 ** Time varying generation count on initial
 table count_on_init_day(day, i) number of time periods each generator has been on
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Generator_InitOn!a2:am7 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux3.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux3.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux3.inc
 ;
 
 ** Fixed operating cost of each generator
 table aux4(i, column)
 *$call =xls2gms r=Generator_Data!j2:k40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux4.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux4.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux4.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -96,7 +96,7 @@ a(i) = sum(column, aux4(i, column));
 ** Generator ramp up limit
 table aux5(i, column)
 *$call =xls2gms r=Generator_Data!m2:n40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux5.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux5.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux5.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -106,7 +106,7 @@ ramp_up(i) = sum(column, aux5(i, column));
 ** Generator ramp down limit
 table aux6(i, column)
 *$call =xls2gms r=Generator_Data!p2:q40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux6.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux6.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux6.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -116,7 +116,7 @@ ramp_down(i) = sum(column, aux6(i, column));
 ** Minimum down time for each generator
 table aux7(i, column)
 *$call =xls2gms r=Generator_Data!s2:t40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux7.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux7.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux7.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -126,7 +126,7 @@ g_down(i) = sum(column, aux7(i, column));
 ** Minimum up time for each generator
 table aux8(i, column)
 *$call =xls2gms r=Generator_Data!v2:w40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux8.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux8.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux8.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -136,7 +136,7 @@ g_up(i) = sum(column, aux8(i, column));
 ** Minimum power output
 table aux9(i, column)
 *$call =xls2gms r=Generator_Data!y2:z40 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux9.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux9.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux9.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -147,7 +147,7 @@ g_min(i) = sum(column, aux9(i, column));
 table g_0_day(day, i) generator generation at t = 0
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Generator_PInit!a2:am7 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux10.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux10.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux10.inc
 ;
 
 ** Generator on-off status at t = 0
@@ -171,13 +171,13 @@ L_down_min_day(day, i) =
 
 *table suc_sl(i,j) generator stepwise start-up hourly blocks
 **$call =xls2gms r=Generator_Data!ay2:bg98 i=Input_Data.xlsx o=start_up_sl.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\start_up_sl.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\start_up_sl.inc
 *;
 
 *table aux2(i,column)
 *  modified here
 **$call =xls2gms r=Generator_Data!d2:e318 i=Input_Data_WECC2024_BPA_year.xlsx o=aux2.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\aux2.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux2.inc
 *;
 *parameter
 *count_off_init(i)=sum(column,aux2(i,column));
@@ -185,7 +185,7 @@ L_down_min_day(day, i) =
 *table aux3(i,column)
 *  modified here
 **$call =xls2gms r=Generator_Data!g2:h318 i=Input_Data_WECC2024_BPA_year.xlsx o=aux3.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\aux3.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux3.inc
 *;
 *parameter count_on_init(i) number of time periods each generator has been on;
 *count_on_init(i)=sum(column,aux3(i,column));
@@ -193,7 +193,7 @@ L_down_min_day(day, i) =
 *table aux10(i,column)
 *  modified here
 **$call =xls2gms r=Generator_Data!ab2:ac318 i=Input_Data_WECC2024_BPA_year.xlsx o=aux10.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\aux10.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux10.inc
 *;
 *parameter g_0(i) generator generation at t=0;
 *g_0(i)=sum(column,aux10(i,column));
@@ -205,13 +205,13 @@ L_down_min_day(day, i) =
 ** Origin and destination buses for each transmission line
 table line_map(l, from_to) line map
 *$call =xls2gms r=Line_Map!e1:g3319 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\line_map.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\line_map.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\line_map.inc
 ;
 
 ** Admittance of each transmission line
 table aux11(l, column)
 *$call =xls2gms r=Line_Data!a1:b3319 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux11.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux11.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux11.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -221,7 +221,7 @@ admittance(l) = abs(sum(column, aux11(l, column)));
 ** Line capacities
 table aux12(l, column)
 *$call =xls2gms r=Line_Data!j1:k3319 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\aux12.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\aux12.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\aux12.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -230,7 +230,7 @@ l_max(l) = sum(column, aux12(l, column));
 
 ** Transmission lines connected to snopud buses
 table snpd_lines_aux(l, column)
-$include C:\BPA_project\Test_connect_HA_ok\Data\snpd_lines.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\snpd_lines.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -245,12 +245,12 @@ snpd_lines_map(l) = sum(column, snpd_lines_aux(l, column));
 table d_day(day, s, t) demand at bus s
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Load1!a1:aa13821 i=Data\BPA_fixed_load_Apr13.xlsx o=Data\load1.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\load1.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load1.inc
 ;
 
 ** Auxiliary parameter used to remove the load from islanded buses
 table map_islands_aux(s, column) one-bus islands
-$include C:\BPA_project\Test_connect_HA_ok\Data\map_islands.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\map_islands.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -267,7 +267,7 @@ d_day(day, s, t) = d_day(day, s, t)*map_islands(s);
 *** Time varying demand for 2nd group of days
 *table d_day2(day,s,t) demand at bus s
 **$call =xls2gms r=Load2!a1:aaXXXX i=BPA_fixed_load_Apr13.xlsx o=load2.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\load2.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load2.inc
 *;
 *
 *d_day(day,s,t)$(d_day2(day,s,t)>0) = d_day2(day,s,t);
@@ -275,7 +275,7 @@ d_day(day, s, t) = d_day(day, s, t)*map_islands(s);
 *** Time varying demand for 3rd group of days
 *table d_day3(day,s,t) demand at bus s
 **$call =xls2gms r=Load3!a1:aaXXXX i=BPA_fixed_load_Apr13.xlsx o=load3.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\load3.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load3.inc
 *;
 *
 *d_day(day,s,t)$(d_day3(day,s,t)>0) = d_day3(day,s,t);
@@ -283,7 +283,7 @@ d_day(day, s, t) = d_day(day, s, t)*map_islands(s);
 *** Time varying demand for 4th group of days
 *table d_day4(day,s,t) demand at bus s
 **$call =xls2gms r=Load4!a1:aaXXXX i=BPA_fixed_load_Apr13.xlsx o=load4.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\load4.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load4.inc
 *;
 *
 *d_day(day,s,t)$(d_day4(day,s,t)>0) = d_day4(day,s,t);
@@ -291,7 +291,7 @@ d_day(day, s, t) = d_day(day, s, t)*map_islands(s);
 *** Time varying demand for 5th group of days
 *table d_day5(day,s,t) demand at bus s
 **$call =xls2gms r=Load5!a1:aaXXXX i=BPA_fixed_load_Apr13.xlsx o=load5.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\load5.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load5.inc
 *;
 *
 *d_day(day,s,t)$(d_day5(day,s,t)>0) = d_day5(day,s,t);
@@ -299,7 +299,7 @@ d_day(day, s, t) = d_day(day, s, t)*map_islands(s);
 *** Time varying demand for 6th group of days
 *table d_day6(day,s,t) demand at bus s
 **$call =xls2gms r=Load6!a1:aaXXXX i=BPA_fixed_load_Apr13.xlsx o=load6.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\load6.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load6.inc
 *;
 *
 *d_day(day,s,t)$(d_day6(day,s,t)>0) = d_day6(day,s,t);
@@ -312,13 +312,13 @@ d_day(day, s, t) = d_day(day, s, t)*map_islands(s);
 *table d_1(s_1,t) demand at bus s - part 1
 *modified here
 **$call =xls2gms r=Load_Active_Part_1!a27:y10027 i=Input_Data_WECC2024_BPA_year.xlsx o=load_part_1.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\load_part_1.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load_part_1.inc
 *;
 *
 *table d_2(s_2,t) demand at bus s - part 2
 *modified here
 **$call =xls2gms r=Load_Active_Part_2!a27:y7573 i=Input_Data_WECC2024_BPA_year.xlsx o=load_part_2.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\load_part_2.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\load_part_2.inc
 *;
 *
 *parameter d(t,s) demand at bus s;
@@ -331,7 +331,7 @@ d_day(day, s, t) = d_day(day, s, t)*map_islands(s);
 ** Locations of the wind power plants
 table win_map_aux(w, wcolumn) wind map
 *$call =xls2gms r=Wind!e1:f74 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\wmap2.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\wmap2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\wmap2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -342,7 +342,7 @@ win_map(w) = sum(wcolumn, win_map_aux(w, wcolumn));
 table wind_deterministic_day(day, t, w) wind data
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Wind!h1:ce121 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\wind_deterministic.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\wind_deterministic.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\wind_deterministic.inc
 ;
 
 ********************************************************************************
@@ -357,8 +357,8 @@ $include C:\BPA_project\Test_connect_HA_ok\Data\wind_deterministic.inc
 **** SWITCHING PARAMETER DEFINITION TO BE CONSISTENT WITH SOLAR AND LOAD
 
 *table wind_deterministic_day(day,t,w) wind data
-**$call =xls2gms r = Sheet1!a1:ce97 i = C:\BPA_project\Test_connect_HA_ok\Data\wind_hour_ahead.xls o = Data\wind_hour_ahead_aux.inc
-*$include C:\BPA_project\Test_connect_HA_ok\Data\wind_hour_ahead_aux.inc
+**$call =xls2gms r = Sheet1!a1:ce97 i = C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\wind_hour_ahead.xls o = Data\wind_hour_ahead_aux.inc
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\wind_hour_ahead_aux.inc
 *;
 
 ********************************************************************************
@@ -368,7 +368,7 @@ $include C:\BPA_project\Test_connect_HA_ok\Data\wind_deterministic.inc
 ** Locations of the solar plants
 table sol_map_aux(r, rcolumn) solar map
 *$call =xls2gms r=Solar!e1:f6 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\rmap2.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\rmap2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\rmap2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -379,7 +379,7 @@ sol_map(r) = sum(rcolumn, sol_map_aux(r, rcolumn));
 *This call is appropriate for analyzing 5 days
 table sol_deterministic_day(day, t, r) solar data
 *$call =xls2gms r=Solar!h1:o121 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\solar_deterministic.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\solar_deterministic.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\solar_deterministic.inc
 ;
 
 ********************************************************************************
@@ -389,7 +389,7 @@ $include C:\BPA_project\Test_connect_HA_ok\Data\solar_deterministic.inc
 ** Locations of the fixed generators
 table fix_map_aux(f, fcolumn) fixed map
 *$call =xls2gms r=Fixed!e1:f441 i=Data\Input_Data_WECC2024_BPA_Apr13.xlsx o=Data\fmap2.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\fmap2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\fmap2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -400,7 +400,7 @@ fix_map(f) = sum(fcolumn, fix_map_aux(f, fcolumn));
 table fix_deterministic_day(day, f, t) fixed data
 *This call is appropriate for analyzing 5 days
 *$call =xls2gms r=Fixed!a1:aa2201 i=Data\BPA_fixed_load_Apr13.xlsx o=Data\fixed_deterministic.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\fixed_deterministic.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\fixed_deterministic.inc
 ;
 
 ********************************************************************************
@@ -423,11 +423,11 @@ scalars penalty_pf    penalty factor /2000/
 ;
 
 scalar N /
-$include C:\BPA_project\Test_connect_HA_ok\Data\Day_number.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Day_number.csv
 /;
 
 scalar hour /
-$include C:\BPA_project\Test_connect_HA_ok\Data\Hour_number.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Hour_number.csv
 /;
 
 ********************************************************************************
@@ -466,19 +466,19 @@ parameter action_aux(t, s),
 ** Locations of the energy storage systems (ESS)
 table storage_map_aux(d, column) map energy storage - bus
 *$call =xls2gms r=map_storage!a2:b22 i=ES_data.xlsx o=Data\storage_map.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\storage_map.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\storage_map.inc
 ;
 
 ** Area labels for energy storage systems
 table area_name_storage(d, column)
 *$call =xls2gms r=map_storage!d2:e22 i=ES_data.xlsx o=Data\area_map.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\area_map.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\area_map.inc
 ;
 
 ** Zone labels for energy storage systems
 table zone_name_storage(d, column)
 *$call =xls2gms r=map_storage!g2:h22 i=ES_data.xlsx o=Data\zone_map.inc
-$include C:\BPA_project\Test_connect_HA_ok\Data\zone_map.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\zone_map.inc
 ;
 
 parameter storage_map(d);
@@ -493,35 +493,35 @@ storage_zone(d) = sum(column, zone_name_storage(d, column));
 ** ES maximum power rating
 parameter ES_power_max(d) /
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\ES_power_max.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\ES_power_max.csv
 $offdelim
 /;
 
 ** ES maximum energy rating
 parameter Emax(d) /
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\Emax.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Emax.csv
 $offdelim
 /;
 
 ** Initial energy state-of-charge
 parameter E_initial(d) /
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\E_initial.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\E_initial.csv
 $offdelim
 /;
 
 ** Final energy state-of-charge
 parameter E_final(d) /
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\E_final.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\E_final.csv
 $offdelim
 /;
 
 ** Charging efficiency of the energy storage devices
 parameter alef_ch(d) /
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\Efficiency.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Efficiency.csv
 $offdelim
 /;
 
@@ -540,7 +540,7 @@ E_final(d) = E_final(d) / s_base;
 
 ** Generation level in the previous period
 table g_0_previous_aux(i, column) generator generation at the previous period of the considered optimization horizon
-$include C:\BPA_project\Test_connect_HA_ok\Data\g_0_previous_aux2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\g_0_previous_aux2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -549,7 +549,7 @@ g_0_previous(i) = sum(column, g_0_previous_aux(i, column));
 
 ** On-off status in the previous period
 table onoff_t0_previous_aux(i, column) on-off status at the previous period of the previous considered optimization horizon
-$include C:\BPA_project\Test_connect_HA_ok\Data\onoff_t0_previous_aux2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\onoff_t0_previous_aux2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -558,7 +558,7 @@ onoff_t0_previous(i) = sum(column, onoff_t0_previous_aux(i, column));
 
 ** On-off status in the previous period
 table onoff_t1_previous_aux(i, column) on-off status at the previous period of the considered optimization horizon
-$include C:\BPA_project\Test_connect_HA_ok\Data\onoff_t1_previous_aux2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\onoff_t1_previous_aux2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -567,7 +567,7 @@ onoff_t1_previous(i) = sum(column, onoff_t1_previous_aux(i, column));
 
 ** Up time in the previous period
 table count_on_init_previous_aux(i, column) num hours on at the previous period of the considered optimization horizon
-$include C:\BPA_project\Test_connect_HA_ok\Data\count_on_init_previous_aux2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\count_on_init_previous_aux2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -576,7 +576,7 @@ count_on_init_previous(i) = sum(column, count_on_init_previous_aux(i, column));
 
 ** Down time in the previous period
 table count_off_init_previous_aux(i, column) num hours off at the previous period of the considered optimization horizon
-$include C:\BPA_project\Test_connect_HA_ok\Data\count_off_init_previous_aux2.inc
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\count_off_init_previous_aux2.inc
 ;
 
 ** Transformation of the previous matrix into a vector
@@ -615,7 +615,7 @@ count_off_init_aux(i)$((onoff_t1_previous(i) ne onoff_t0_previous(i)) and
 
 table injection_DA(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_DA_new_ok\Data\pext_2round.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_DA\Data\pext_2round.csv
 $offdelim
 ;
 

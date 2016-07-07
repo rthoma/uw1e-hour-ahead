@@ -22,53 +22,53 @@ option limrow = 0,
 *** READING INPUT DATA                                                         *
 ********************************************************************************
 
-$include C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\input_data_4hour_TH.gms
 
 table g_bis2(i, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\gbis.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\gbis.csv
 $offdelim
 ;
 
 table glin_bis2A(i, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\glin_bisA.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\glin_bisA.csv
 $offdelim
 ;
 
 table glin_bis2B(i, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\glin_bisB.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\glin_bisB.csv
 $offdelim
 ;
 
 table glin_bis2C(i, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\glin_bisC.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\glin_bisC.csv
 $offdelim
 ;
 
 table slack_wind_bis2(w, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\slackwindbis.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\slackwindbis.csv
 $offdelim
 ;
 
 table slack_solar_bis2(r, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\slacksolarbis.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\slacksolarbis.csv
 $offdelim
 ;
 
 table slack_fixed_bis2(f, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\slackfixedbis.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\slackfixedbis.csv
 $offdelim
 ;
 
 table powerflowUC2(l, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\powerflow.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\powerflow.csv
 $offdelim
 ;
 
@@ -101,49 +101,49 @@ M_cong(t)$(sum(l, M_cong_aux(t, l)) gt 0) = 1;
 
 table ch_DEPO(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\ch_DEPO.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\ch_DEPO.csv
 $offdelim
 ;
 
 table dis_DEPO(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\dis_DEPO.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\dis_DEPO.csv
 $offdelim
 ;
 
 table C_ch(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\C_ch.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\C_ch.csv
 $offdelim
 ;
 
 table C_dis(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\C_dis.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\C_dis.csv
 $offdelim
 ;
 
 table C_SC(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\C_SC.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\C_SC.csv
 $offdelim
 ;
 
 table C_SD(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\C_SD.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\C_SD.csv
 $offdelim
 ;
 
 table P_ch(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\P_ch.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\P_ch.csv
 $offdelim
 ;
 
 table P_dis(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\P_dis.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\P_dis.csv
 $offdelim
 ;
 
@@ -513,7 +513,7 @@ solve CR using mip minimizing obj;
 ********************************************************************************
 
 ** We compute again the total injections/extractions from the ES
-FILE output1 /'C:\BPA_project\Test_connect_HA_ok\Data\pext_2round.csv'/;
+FILE output1 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\pext_2round.csv'/;
 put output1
 put "** Power extracted in the second round**"/;
 loop(t$(t_ha(t)),
@@ -533,7 +533,7 @@ put /;
 
 *table p_ext2(d,t)
 *$ondelim
-*$include C:\BPA_project\Test_connect_HA_ok\Data\pext_2round.csv
+*$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\pext_2round.csv
 *$offdelim
 *;
 
@@ -570,9 +570,9 @@ loop((s, d)$(storage_map(d) eq ord(s)),
 
 OPTIONS decimals = 6;
 
-FILE Minimum_load_output /'C:\BPA_project\Test_connect_HA_ok\Data\Minimum_load.csv'/;
+FILE Minimum_load_output /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Minimum_load.csv'/;
 PUT Minimum_load_output;
-PUT_UTILITIES 'ren' / 'C:\BPA_project\Test_connect_HA_ok\Data\Minimum_load_D':0 N:1:0 '_H':0 hour:2:0 '.csv':0;
+PUT_UTILITIES 'ren' / 'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Minimum_load_D':0 N:1:0 '_H':0 hour:2:0 '.csv':0;
 
 put "** MINIMUM LOAD AT BUSES WHERE STORAGE UNITS ARE LOCATED **"/;
 
@@ -591,9 +591,9 @@ loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
 put /;
 );
 
-FILE Maximum_load_output /'C:\BPA_project\Test_connect_HA_ok\Data\Maximum_load.csv'/;
+FILE Maximum_load_output /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Maximum_load.csv'/;
 PUT Maximum_load_output;
-PUT_UTILITIES 'ren' / 'C:\BPA_project\Test_connect_HA_ok\Data\Maximum_load_D':0 N:1:0 '_H':0 hour:2:0 '.csv':0;
+PUT_UTILITIES 'ren' / 'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\Maximum_load_D':0 N:1:0 '_H':0 hour:2:0 '.csv':0;
 
 put "** MAXIMUM LOAD AT BUSES WHERE STORAGE UNITS ARE LOCATED **"/;
 loop(t$(t_ha(t)),
@@ -631,7 +631,7 @@ power_flow_out(t, l) = pf.l(t, l)*s_base + eps;
 slack_out(s, t) = slack_pbal.l(s, t)*s_base + eps;
 
 
-execute_unload "C:\BPA_project\Test_connect_HA_ok\cr2_ha_day2_hour24.gdx"
+execute_unload "C:\Users\idm\Desktop\BPA_project\Test_connect_HA\cr2_ha_day2_hour24.gdx"
     power_flow_out,
     mst,
     sst,

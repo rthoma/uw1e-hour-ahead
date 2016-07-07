@@ -25,11 +25,11 @@ option limrow = 0,
 ** We assume that the total injections/extractions from ES are accepted by DEPO
 ** In the general case, DEPO would provide a slightly different schedule or not
 
-$include C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\input_data_4hour_TH.gms
 
 table p_ext2(d, t)
 $ondelim
-$include C:\BPA_project\Test_connect_HA_ok\Data\pext_2round.csv
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\pext_2round.csv
 $offdelim
 ;
 
@@ -291,7 +291,7 @@ slack_wind_out_total = sum((w, t)$(t_ha(t)), slack_wind.l(w, t))*s_base + eps;
 slack_fixed_out_total = sum((f, t)$(t_ha(t)), slack_fixed.l(f, t))*s_base + eps;
 
 ** Output of results in a gdx file
-execute_unload "C:\BPA_project\Test_connect_HA_ok\uc_ha_day2_hour24_constrained_relieved.gdx"
+execute_unload "C:\Users\idm\Desktop\BPA_project\Test_connect_HA\uc_ha_day2_hour24_constrained_relieved.gdx"
     slack_solar_out_total,
     slack_wind_out_total,
     slack_fixed_out_total,
@@ -313,7 +313,7 @@ execute_unload "C:\BPA_project\Test_connect_HA_ok\uc_ha_day2_hour24_constrained_
 *** OUTPUT FILES TO COMPUTE THE INITIAL CONDITIONS FOR NEXT WINDOW             *
 ********************************************************************************
 
-FILE output_init1 /'C:\BPA_project\Test_connect_HA_ok\Data\g_0_previous_aux2.inc'/;
+FILE output_init1 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\g_0_previous_aux2.inc'/;
 put output_init1
 put "** Power output at the first period **"/;
 loop(column,
@@ -328,7 +328,7 @@ loop(i,
 put /;
 );
 
-FILE output_init2 /'C:\BPA_project\Test_connect_HA_ok\Data\count_on_init_previous_aux2.inc'/;
+FILE output_init2 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\count_on_init_previous_aux2.inc'/;
 put output_init2
 put "** number of hours unit has been on at the previous period of the considered optimization horizond **"/;
 loop(column,
@@ -343,7 +343,7 @@ loop(i,
 put /;
 );
 
-FILE output_init3 /'C:\BPA_project\Test_connect_HA_ok\Data\count_off_init_previous_aux2.inc'/;
+FILE output_init3 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\count_off_init_previous_aux2.inc'/;
 put output_init3
 put "** number of hours unit has been off at the previous period of the considered optimization horizon **"/;
 loop(column,
@@ -358,7 +358,7 @@ loop(i,
 put /;
 );
 
-FILE output_init4 /'C:\BPA_project\Test_connect_HA_ok\Data\onoff_t0_previous_aux2.inc'/;
+FILE output_init4 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\onoff_t0_previous_aux2.inc'/;
 put output_init4
 put "** on-off status at the previous period of the previous considered optimization horizon **"/;
 loop(column,
@@ -373,7 +373,7 @@ loop(i,
 put /;
 );
 
-FILE output_init5 /'C:\BPA_project\Test_connect_HA_ok\Data\onoff_t1_previous_aux2.inc'/;
+FILE output_init5 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\onoff_t1_previous_aux2.inc'/;
 put output_init5
 put "** on-off status at the previous period of the considered optimization horizon **"/;
 loop(column,

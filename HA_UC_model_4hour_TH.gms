@@ -22,7 +22,7 @@ option limrow = 0,
 *** READING INPUT DATA                                                         *
 ********************************************************************************
 
-$include C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
+$include C:\Users\idm\Desktop\BPA_project\Test_connect_HA\input_data_4hour_TH.gms
 
 ********************************************************************************
 *** DECLARATION OF FREE VARIABLES, POSITIVE VARIABLES, BINARY VARIABLES        *
@@ -289,7 +289,7 @@ slack_wind_out_total = sum((w, t)$(t_ha(t)), slack_wind.l(w, t))*s_base + eps;
 slack_fixed_out_total = sum((f, t)$(t_ha(t)), slack_fixed.l(f, t))*s_base + eps;
 
 ** Output of results in a gdx file
-execute_unload "C:\BPA_project\Test_connect_HA_ok\uc_ha_day2_hour24_constrained.gdx"
+execute_unload "C:\Users\idm\Desktop\BPA_project\Test_connect_HA\uc_ha_day2_hour24_constrained.gdx"
     slack_solar_out_total,
     slack_wind_out_total,
     slack_fixed_out_total,
@@ -311,7 +311,7 @@ execute_unload "C:\BPA_project\Test_connect_HA_ok\uc_ha_day2_hour24_constrained.
 ********************************************************************************
 
 ** Output of the power from conventional thermal generators
-FILE output1 /'C:\BPA_project\Test_connect_HA_ok\Data\gbis.csv'/;
+FILE output1 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\gbis.csv'/;
 put output1
 put "** Power output **"/;
 loop(t$(t_ha(t)),
@@ -330,7 +330,7 @@ put /;
 );
 
 ** Output of the power for the first block of conventional thermal units
-FILE output2A /'C:\BPA_project\Test_connect_HA_ok\Data\glin_bisA.csv'/;
+FILE output2A /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\glin_bisA.csv'/;
 put output2A
 put "** Power output of block 1 **"/;
 loop(t$(t_ha(t)),
@@ -349,7 +349,7 @@ put /;
 );
 
 ** Output of the power for the second block of conventional thermal units
-FILE output2B /'C:\BPA_project\Test_connect_HA_ok\Data\glin_bisB.csv'/;
+FILE output2B /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\glin_bisB.csv'/;
 put output2B
 put "** Power output of block 2 **"/;
 loop(t$(t_ha(t)),
@@ -368,7 +368,7 @@ put /;
 );
 
 ** Output of the power for the third block of conventional thermal units
-FILE output2C /'C:\BPA_project\Test_connect_HA_ok\Data\glin_bisC.csv'/;
+FILE output2C /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\glin_bisC.csv'/;
 put output2C
 put "** Power output of block 3 **"/;
 loop(t$(t_ha(t)),
@@ -387,7 +387,7 @@ put /;
 );
 
 ** Output of the wind spillage
-FILE output3 /'C:\BPA_project\Test_connect_HA_ok\Data\slackwindbis.csv'/;
+FILE output3 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\slackwindbis.csv'/;
 put output3
 put "** Wind spillage **"/;
 loop(t$(t_ha(t)),
@@ -406,7 +406,7 @@ put /;
 );
 
 ** Output of the solar spillage
-FILE output4 /'C:\BPA_project\Test_connect_HA_ok\Data\slacksolarbis.csv'/;
+FILE output4 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\slacksolarbis.csv'/;
 put output4
 put "** Solar spillage **"/;
 loop(t$(t_ha(t)),
@@ -425,7 +425,7 @@ put /;
 );
 
 ** Output of the fixed "spillage"
-FILE output5 /'C:\BPA_project\Test_connect_HA_ok\Data\slackfixedbis.csv'/;
+FILE output5 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\slackfixedbis.csv'/;
 put output5
 put "** Fixed spillage **"/;
 loop(t$(t_ha(t)),
@@ -444,7 +444,7 @@ put /;
 );
 
 ** Power flow of each transmission line
-FILE output6 /'C:\BPA_project\Test_connect_HA_ok\Data\powerflow.csv'/;
+FILE output6 /'C:\Users\idm\Desktop\BPA_project\Test_connect_HA\Data\powerflow.csv'/;
 put output6
 put "** Power flow **"/;
 loop(t$(t_ha(t)),
