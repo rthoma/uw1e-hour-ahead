@@ -132,16 +132,19 @@ block_output(t, i, b)$(t_ha(t))..
         g_lin(t, i, b) =l= g_max(i, b)*v(t, i);
 
 ** Initial conditions for the minimum up and down time constraints
-min_updown_1(t, i)$(t_ha(t) and (L_up_min(i) + L_down_min(i) gt 0) and (ord(t) le L_up_min(i) + L_down_min(i)))..
-        v(t, i) =e= onoff_t0(i);
+min_updown_1(t, i)$(t_ha(t) and (L_up_min(i) + L_down_min(i) gt 0)
+                            and (ord(t) le L_up_min(i) + L_down_min(i)))..
+                                    v(t, i) =e= onoff_t0(i);
 
 ** Minimum up time constraints for the rest of the periods
 min_updown_2(t, i)$(t_ha(t) and (ord(t) gt L_up_min(i)))..
-        sum(tt$(ord(tt) ge ord(t) - g_up(i) + 1 and ord(tt) le ord(t)), y(tt, i)) =l= v(t, i);
+        sum(tt$((ord(tt) ge ord(t) - g_up(i) + 1)
+                 and (ord(tt) le ord(t))), y(tt, i)) =l= v(t, i);
 
 ** Minimum down time constraints for the rest of the periods
 min_updown_3(t, i)$(t_ha(t) and (ord(t) gt L_down_min(i)))..
-        sum(tt$(ord(tt) ge ord(t) - g_down(i) + 1 and ord(tt) le ord(t)), z(tt, i)) =l= 1 - v(t, i);
+        sum(tt$((ord(tt) ge ord(t) - g_down(i) + 1)
+                 and (ord(tt) le ord(t))), z(tt, i)) =l= 1 - v(t, i);
 
 ** Ramp down constraints for periods greater than the current hour
 ramp_limit_min(t, i)$(t_ha(t) and (ord(t) gt hour))..

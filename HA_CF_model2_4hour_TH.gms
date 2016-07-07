@@ -222,7 +222,6 @@ binary variables
          v(t, i)           commitment variable
          y(t, i)           start up variable
          z(t, i)           shut down variable
-         v_ch(t, d)        binary variable associated with the charge of ES device d in period t
 ;
 
 
@@ -245,8 +244,8 @@ equations
         block_output(t, i, b)            maximum power output of each block
         ramp_limit_min(t, i)             ramp down constraint
         ramp_limit_max(t, i)             ramp up constraint
-        ramp_limit_min_1(i)              ramp down constraint t = 1
-        ramp_limit_max_1(i)              ramp up constraint t = 1
+        ramp_limit_min_1(t, i)           ramp down constraint t = 1
+        ramp_limit_max_1(t, i)           ramp up constraint t = 1
         line_flow(t, l)                  power flow
         line_capacity_min(t, l)          maximum power flow limits
         line_capacity_max(t, l)          minimum power flow limits
@@ -280,16 +279,26 @@ alias (t, tt);
 
 cost..
     obj =e= sum((t, i)$(t_ha(t)), suc_sw(i)*y(t, i) + a(i)*v(t, i)
-                + sum(b, (deltag_lin_plus(t, i, b) + deltag_lin_minus(t, i, b))*k(i, b)))
-          + sum((t, r)$(t_ha(t)), slack_solar_plus(t, r) + slack_solar_minus(t, r)) * penalty_pf
-          + sum((t, w)$(t_ha(t)), slack_wind_plus(t, w) + slack_wind_minus(t, w)) * penalty_pf
-          + sum((f, t)$(t_ha(t)), slack_fixed_plus(t, f) + slack_fixed_minus(t, f)) * penalty_pf
-          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) ge 0)), ch_TEPO(t, d)*C_ch(d, t))
-          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) ge 0)), dis_TEPO(t, d)*C_dis(d, t))
-          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) gt 0)), dis_TEPO_SC(t, d)*C_SC(d, t))
-          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) gt 0)), ch_TEPO_SD(t, d)*C_SD(d, t))
-          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) gt 0)), ch_TEPO(t, d)*P_ch(d, t))
-          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) gt 0)), dis_TEPO(t, d)*P_dis(d, t))
+                + sum(b, (deltag_lin_plus(t, i, b)
+                        + deltag_lin_minus(t, i, b))*k(i, b)))
+          + sum((t, r)$(t_ha(t)), slack_solar_plus(t, r)
+                                + slack_solar_minus(t, r)) * penalty_pf
+          + sum((t, w)$(t_ha(t)), slack_wind_plus(t, w)
+                                + slack_wind_minus(t, w)) * penalty_pf
+          + sum((f, t)$(t_ha(t)), slack_fixed_plus(t, f)
+                                + slack_fixed_minus(t, f)) * penalty_pf
+          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) ge 0)),
+                        ch_TEPO(t, d)*C_ch(d, t))
+          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) ge 0)),
+                        dis_TEPO(t, d)*C_dis(d, t))
+          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) gt 0)),
+                        dis_TEPO_SC(t, d)*C_SC(d, t))
+          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) gt 0)),
+                        ch_TEPO_SD(t, d)*C_SD(d, t))
+          + sum((t, d)$(t_ha(t) and (dis_DEPO(d, t) gt 0)),
+                        ch_TEPO(t, d)*P_ch(d, t))
+          + sum((t, d)$(t_ha(t) and (ch_DEPO(d, t) gt 0)),
+                        dis_TEPO(t, d)*P_dis(d, t))
           + sum((s, t)$(t_ha(t)), slack_pbal(s, t)) * 100000000
 ;
 
@@ -332,13 +341,13 @@ gen_min(t, i)$(t_ha(t))..
 block_output(t, i, b)$(t_ha(t))..
          glin_bis(t, i, b) + deltag_lin_plus(t, i, b) - deltag_lin_minus(t, i, b) =l= g_max(i, b)*v(t, i);
 
-** Ramp down constraints for periods greater than 1
-ramp_limit_min(t, i)$(t_ha(t) and (ord(t) gt 1))..
+** Ramp down constraints for periods greater than the initial hour
+ramp_limit_min(t, i)$(t_ha(t) and (ord(t) gt hour))..
          -ramp_down(i) =l= (gbis(t, i) + deltag_plus(t, i) - deltag_minus(t, i))
                          - (gbis(t-1, i) + deltag_plus(t-1, i) - deltag_minus(t-1, i));
 
-** Ramp up constraints for periods greater than 1
-ramp_limit_max(t, i)$(t_ha(t) and (ord(t) gt 1))..
+** Ramp up constraints for periods greater than the initial hour
+ramp_limit_max(t, i)$(t_ha(t) and (ord(t) gt hour))..
          ramp_up(i) =g= (gbis(t, i) + deltag_plus(t, i) - deltag_minus(t, i))
                       - (gbis(t-1, i) + deltag_plus(t-1, i) - deltag_minus(t-1, i));
 
@@ -350,39 +359,39 @@ ramp_limit_min_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
 ramp_limit_max_1(t, i)$(t_ha(t) and (ord(t) eq hour))..
          ramp_up(i) =g= (gbis(t, i) + deltag_plus(t, i) - deltag_minus(t, i)) - g_0(i);
 
-** Nodal power balance equations including the power output of conventional thermal units
-** fixed generation, solar generation, wind generation, in and out flows, and the nodal demand
+** Nodal power balance equations
 ** Now we also incorporate the injections from the ES devices
-
 power_balance(t, s)$(t_ha(t))..
-    demand(s, t) + sum(d$(storage_map(d) eq ord(s)), ch_total(t, d) - dis_total(t, d)) - slack_pbal(s, t) =e=
-          sum(i$(gen_map(i) = ord(s)),
-              gbis(t, i)
-            + deltag_plus(t, i)
-            - deltag_minus(t, i))
-        + sum(f$(fix_map(f) = ord(s)),
-              fix_deterministic(f, t)
-            - slack_fixed_bis(f, t)
-            - slack_fixed_plus(t, f)
-            + slack_fixed_minus(t, f))
-        + sum(r$(sol_map(r) = ord(s)),
-              sol_deterministic(t, r)
-            - slack_solar_bis(r, t)
-            - slack_solar_plus(t, r)
-            + slack_solar_minus(t, r))
-        + sum(w$(win_map(w) = ord(s)),
-              wind_deterministic(t, w)
-            - slack_wind_bis(w, t)
-            - slack_wind_plus(t, w)
-            + slack_wind_minus(t, w))
-        - sum(l$(line_map(l, 'from') = ord(s)), pf(t, l))
-        + sum(l$(line_map(l, 'to') = ord(s)), pf(t, l))
+    demand(s, t) + sum(d$(storage_map(d) eq ord(s)),
+                       ch_total(t, d) - dis_total(t, d)) - slack_pbal(s, t) =e=
+                               sum(i$(gen_map(i) = ord(s)),
+                                   gbis(t, i)
+                                 + deltag_plus(t, i)
+                                 - deltag_minus(t, i))
+                             + sum(f$(fix_map(f) = ord(s)),
+                                   fix_deterministic(f, t)
+                                 - slack_fixed_bis(f, t)
+                                 - slack_fixed_plus(t, f)
+                                 + slack_fixed_minus(t, f))
+                             + sum(r$(sol_map(r) = ord(s)),
+                                   sol_deterministic(t, r)
+                                 - slack_solar_bis(r, t)
+                                 - slack_solar_plus(t, r)
+                                 + slack_solar_minus(t, r))
+                             + sum(w$(win_map(w) = ord(s)),
+                                   wind_deterministic(t, w)
+                                 - slack_wind_bis(w, t)
+                                 - slack_wind_plus(t, w)
+                                 + slack_wind_minus(t, w))
+                             - sum(l$(line_map(l, 'from') = ord(s)), pf(t, l))
+                             + sum(l$(line_map(l, 'to') = ord(s)), pf(t, l))
 ;
 
 ** Definition of the power flow of each line in terms of the voltage phase angles
 line_flow(t, l)$(t_ha(t))..
-        pf(t, l) =e= admittance(l)*(sum(s$(line_map(l, 'from') = ord(s)), theta(t, s))
-                                  - sum(s$(line_map(l, 'to') = ord(s)), theta(t, s)));
+        pf(t, l) =e= (sum(s$(line_map(l, 'from') eq ord(s)), theta(t, s))
+                    - sum(s$(line_map(l, 'to') eq ord(s)), theta(t, s)))
+                    * admittance(l);
 
 ** Transmission capacity constraints
 line_capacity_min(t, l)$(t_ha(t))..
@@ -402,43 +411,58 @@ voltage_angles_max(t,s)$(t_ha(t))..
 
 ** Maximum spillage for solar generation
 slack_solar_constr(t, r)$(t_ha(t))..
-        sol_deterministic(t, r) =g= slack_solar_bis(r, t) + slack_solar_plus(t, r) - slack_solar_minus(t, r);
+        sol_deterministic(t, r) =g= slack_solar_bis(r, t)
+                                  + slack_solar_plus(t, r)
+                                  - slack_solar_minus(t, r);
 
 ** Maximum spillage for wind generation
 slack_wind_constr(t, w)$(t_ha(t))..
-        wind_deterministic(t, w) =g= slack_wind_bis(w, t) + slack_wind_plus(t, w) - slack_wind_minus(t, w);
+        wind_deterministic(t, w) =g= slack_wind_bis(w, t)
+                                   + slack_wind_plus(t, w)
+                                   - slack_wind_minus(t, w);
 
 ** Maximum spillage for fixed generation
 slack_fixed_constr(t, f)$(t_ha(t))..
-        fix_deterministic(f, t) =g= slack_fixed_bis(f, t) + slack_fixed_plus(t, f) - slack_fixed_minus(t, f);
+        fix_deterministic(f, t) =g= slack_fixed_bis(f, t)
+                                  + slack_fixed_plus(t, f)
+                                  - slack_fixed_minus(t, f);
 
 ** Minimum spillage for solar generation
 slack_solar_constr2(t, r)$(t_ha(t))..
-        slack_solar_bis(r, t) + slack_solar_plus(t, r) - slack_solar_minus(t, r) =g= 0;
+        slack_solar_bis(r, t) + slack_solar_plus(t, r)
+                              - slack_solar_minus(t, r) =g= 0;
 
 ** Minimum spillage for wind generation
 slack_wind_constr2(t, w)$(t_ha(t))..
-        slack_wind_bis(w, t) + slack_wind_plus(t, w) - slack_wind_minus(t, w) =g= 0;
+        slack_wind_bis(w, t) + slack_wind_plus(t, w)
+                             - slack_wind_minus(t, w) =g= 0;
 
 ** Minimum spillage for fixed generation
 slack_fixed_constr2(t, f)$(t_ha(t))..
-        slack_fixed_bis(f, t) + slack_fixed_plus(t, f) - slack_fixed_minus(t, f) =g= 0;
+        slack_fixed_bis(f, t) + slack_fixed_plus(t, f)
+                              - slack_fixed_minus(t, f) =g= 0;
 
 ** Initial energy storage state of charge trajectory
 eq_storage_init(t, d)$(t_ha(t) and (ord(t) eq hour))..
-        soc(t, d) =e= E_initial(d) + ch_total(t, d)*alef_ch(d) - dis_total(t, d)/alef_dis(d);
+        soc(t, d) =e= E_initial(d) + ch_total(t, d)*alef_ch(d)
+                                   - dis_total(t, d)/alef_dis(d);
 
 ** Energy storage state of charge trajectory in periods greater than the starting hour
 eq_storage(t, d)$(t_ha(t) and (ord(t) gt hour))..
-        soc(t, d) =e= soc(t-1, d) + ch_total(t, d)*alef_ch(d) - dis_total(t, d)/alef_dis(d);
+        soc(t, d) =e= soc(t-1, d) + ch_total(t, d)*alef_ch(d)
+                                  - dis_total(t, d)/alef_dis(d);
 
 ** Definition of the total charge of ES
 eq_ch_total(t, d)$(t_ha(t))..
-        ch_total(t, d) =e= ch_DEPO(d, t) + ch_TEPO_SD(t, d) + ch_TEPO(t, d);
+        ch_total(t, d) =e= ch_DEPO(d, t)
+                         + ch_TEPO_SD(t, d)
+                         + ch_TEPO(t, d);
 
 ** Definition of the total discharge of ES
 eq_dis_total(t, d)$(t_ha(t))..
-        dis_total(t, d) =e= dis_DEPO(d, t) + dis_TEPO_SC(t, d) + dis_TEPO(t, d);
+        dis_total(t, d) =e= dis_DEPO(d, t)
+                          + dis_TEPO_SC(t, d)
+                          + dis_TEPO(t, d);
 
 ** Stop discharging limit
 ch_SD_limit(t, d)$(t_ha(t))..
@@ -581,7 +605,7 @@ loop(d,
     loop(t$((ord(t) ge hour) and (ord(t) lt hour+horizon-1) and (ord(t) lt card(t))),
         put (maximum_load(t,d)):0:3, ","
 );
-loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t))))
+loop(t$(t_ha(t) and ((ord(t) eq hour+horizon-1) or (ord(t) eq card(t)))),
     put (maximum_load(t,d)):0:3,
 );
 put /;
@@ -607,7 +631,7 @@ power_flow_out(t, l) = pf.l(t, l)*s_base + eps;
 slack_out(s, t) = slack_pbal.l(s, t)*s_base + eps;
 
 
-execute_unload "cr2_ha_day2_hour24.gdx"
+execute_unload "C:\BPA_project\Test_connect_HA_ok\cr2_ha_day2_hour24.gdx"
     power_flow_out,
     mst,
     sst,

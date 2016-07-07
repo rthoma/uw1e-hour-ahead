@@ -131,9 +131,6 @@ Order=1,2
 Decim=7
 PlaneRownr=-1
 
-[RP:HA_CF_MODEL2]
-1=
-
 [RP:HA_UC_MODEL2]
 1=
 
@@ -458,38 +455,41 @@ PlaneRownr=-1
 [RP:UNTITLED_1]
 1=
 
-[RP:INPUT_DATA_4HOUR_TH]
+[RP:INPUT_DATA]
 1=
 
 [OPENWINDOW_1]
 MAXIM=0
 TOP=0
 LEFT=0
-HEIGHT=871
-WIDTH=1397
-
-[RP:HA_UC_MODEL2_4HOUR_TH]
-1=
+HEIGHT=1273
+WIDTH=2140
 
 [RP:HA_UC_MODEL_4HOUR_TH]
 1=
 
-[RP:HA_CF_MODEL2_4HOUR_TH]
+[RP:HA_CF_MODEL2]
 1=
 
 [RP:HA_CF_MODEL_4HOUR_TH]
 1=
 
-[RP:INPUT_DATA]
+[RP:HA_CF_MODEL2_4HOUR_TH]
+1=
+
+[RP:HA_UC_MODEL2_4HOUR_TH]
+1=
+
+[RP:INPUT_DATA_4HOUR_TH]
 1=
 
 [MRUFILES]
-1=C:\BPA_project\Test_connect_DA_new_ok\input_data.gms
-2=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.gms
-3=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.lst
-4=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.gms
-5=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.lst
-6=C:\BPA_project\Test_connect_HA_ok\HA_UC_model_4hour_TH.gms
-7=C:\BPA_project\Test_connect_HA_ok\HA_UC_model_4hour_TH.lst
-8=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.gms
-9=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.lst
+1=C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.gms
+2=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.lst
+3=C:\BPA_project\Test_connect_HA_ok\HA_UC_model2_4hour_TH.gms
+4=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.lst
+5=C:\BPA_project\Test_connect_HA_ok\HA_CF_model2_4hour_TH.gms
+6=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.gms
+7=C:\BPA_project\Test_connect_HA_ok\HA_CF_model_4hour_TH.lst
+8=C:\Users\Admin\Documents\uw1e_ricardo_data\BPA_project_FOR_RYAN\Test_connect_HA_ok\HA_CF_model2.gms
+9=C:\BPA_project\Test_connect_HA_ok\input_data_4hour_TH.lst
